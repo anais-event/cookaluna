@@ -290,7 +290,7 @@ h3,
 
   .menu-sheet .sheet-day,
   .menu-sheet .notes-card,
-  .menu-sheet .decor-card {
+  .menu-sheet .bonus-card {
     break-inside: avoid;
     page-break-inside: avoid;
   }

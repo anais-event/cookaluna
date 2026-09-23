@@ -41,11 +41,11 @@ export const SHEET_TOKENS = {
 // Structure fixe 3x3 :
 // [Lundi, Mardi, Mercredi]
 // [Jeudi, Vendredi, Samedi]
-// [Dimanche, Pense-bete, Espace decoratif]
+// [Dimanche, Fridge Bonus (surprise), Pense-bete]
 export type SheetCell =
   | { kind: "day"; day: DayKey }
-  | { kind: "notes" }
-  | { kind: "decoration" };
+  | { kind: "bonus" }
+  | { kind: "notes" };
 
 export const SHEET_CELLS: SheetCell[] = [
   { kind: "day", day: "monday" },
@@ -55,6 +55,6 @@ export const SHEET_CELLS: SheetCell[] = [
   { kind: "day", day: "friday" },
   { kind: "day", day: "saturday" },
   { kind: "day", day: "sunday" },
+  { kind: "bonus" },
   { kind: "notes" },
-  { kind: "decoration" },
 ];

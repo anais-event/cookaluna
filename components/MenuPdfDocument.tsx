@@ -12,9 +12,9 @@ import {
   SHEET_CELLS,
   SHEET_TOKENS,
   groupMealsByDay,
-  reusedIngredients,
   type SlotsByDay,
 } from "@/lib/menuSheet";
+import { getFridgeBonus, type BonusContent } from "@/lib/fridgeBonus";
 import type { DayKey, MealSlot, MenuMeal, WeeklyMenuData } from "@/lib/types";
 
 const { coral: CORAL, coralLight: CORAL_LIGHT, ink: INK, paper: PAPER, white: WHITE } =
@@ -201,47 +201,90 @@ const s = StyleSheet.create({
     borderBottomStyle: "solid",
     height: 14,
   },
-  reuseRow: {
+  notesFooter: {
     marginTop: 6,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
+    fontSize: 7.5,
+    fontStyle: "italic",
+    color: SHEET_TOKENS.mutedInk,
+    textAlign: "right",
   },
-  reuseItem: {
-    fontFamily: "Helvetica",
-    fontWeight: "bold",
-    fontSize: 8.5,
-  },
-  decorCard: {
+  bonusCard: {
     flex: 1,
     borderWidth: 1.4,
     borderColor: INK,
+    borderStyle: "dashed",
     borderRadius: 10,
     backgroundColor: PAPER,
     padding: 10,
-    alignItems: "center",
-    justifyContent: "center",
   },
-  decorTitle: {
+  bonusHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  bonusTitle: {
+    color: CORAL,
     fontFamily: "Helvetica",
     fontWeight: "bold",
-    fontSize: 9,
-    color: CORAL,
+    fontSize: 8,
     letterSpacing: 1,
     textTransform: "uppercase",
   },
-  decorQuote: {
+  bonusBody: {
+    flex: 1,
+    marginTop: 6,
+    justifyContent: "space-between",
+  },
+  bonusSetup: {
+    fontFamily: "Helvetica",
+    fontWeight: "bold",
+    fontSize: 10,
+    lineHeight: 1.25,
+  },
+  bonusPunchline: {
+    marginTop: 4,
     fontFamily: "Helvetica",
     fontStyle: "italic",
     fontSize: 10,
-    marginTop: 8,
-    textAlign: "center",
+    color: CORAL,
+    lineHeight: 1.25,
+  },
+  bonusPrompt: {
+    fontFamily: "Helvetica",
+    fontSize: 9.5,
     lineHeight: 1.3,
   },
-  decorAuthor: {
-    fontSize: 8,
-    color: SHEET_TOKENS.mutedInk,
+  bonusAnswerBox: {
     marginTop: 6,
+  },
+  bonusHint: {
+    fontSize: 7.5,
+    color: SHEET_TOKENS.mutedInk,
+    fontStyle: "italic",
+  },
+  bonusAnswerLine: {
+    marginTop: 2,
+    borderBottomWidth: 0.8,
+    borderBottomColor: "rgba(17,17,17,0.4)",
+    height: 12,
+  },
+  bonusSignature: {
+    marginTop: 6,
+    fontSize: 7.5,
+    color: SHEET_TOKENS.mutedInk,
+    fontStyle: "italic",
+    textAlign: "right",
+  },
+  bonusInstruction: {
+    fontSize: 8.5,
+    color: SHEET_TOKENS.mutedInk,
+    fontStyle: "italic",
+  },
+  coloringWrap: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    marginVertical: 4,
   },
   footer: {
     height: FOOTER_H,
@@ -344,58 +387,89 @@ function DayCard({ day, slots }: { day: DayKey; slots?: Map<MealSlot, MenuMeal> 
   );
 }
 
-function NotesCard({ reused }: { reused: string[] }) {
+function NotesCard() {
   return (
     <View style={s.notesCard}>
       <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
         <Sparkle size={9} color={CORAL} />
         <Text style={s.notesTitle}>Pense-bête du frigo</Text>
       </View>
-      {reused.length > 0 ? (
-        <>
-          <Text style={s.notesSubtitle}>Ingrédients qui reviennent cette semaine</Text>
-          <View style={s.reuseRow}>
-            {reused.map((item) => (
-              <Text key={item} style={s.reuseItem}>
-                {"• " + item}
-              </Text>
-            ))}
-          </View>
-          <Text style={s.notesSubtitle}>À racheter ou noter ci-dessous :</Text>
-        </>
-      ) : (
-        <Text style={s.notesSubtitle}>Courses, envies, restes à finir…</Text>
-      )}
+      <Text style={s.notesSubtitle}>À noter cette semaine :</Text>
       <View style={s.notesLines}>
         {Array.from({ length: 4 }).map((_, i) => (
           <View key={i} style={s.notesLine} />
         ))}
       </View>
+      <Text style={s.notesFooter}>✎ À compléter à la main</Text>
     </View>
   );
 }
 
-const DECOR_QUOTES = [
-  { text: "La vie est un repas partagé.", author: "Proverbe" },
-  { text: "Le bonheur, c'est du temps, pas de la vaisselle.", author: "Cookaluna" },
-  { text: "Moins de charge mentale, plus de place à table.", author: "Cookaluna" },
-  { text: "Un bon repas efface une mauvaise journée.", author: "Proverbe" },
-];
-
-function pickQuote(seed: string) {
-  let h = 0;
-  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
-  return DECOR_QUOTES[h % DECOR_QUOTES.length];
+function BonusJoke({ bonus }: { bonus: Extract<BonusContent, { type: "joke" }> }) {
+  return (
+    <View style={s.bonusBody}>
+      <Text style={s.bonusSetup}>{bonus.setup}</Text>
+      <Text style={s.bonusPunchline}>{bonus.punchline}</Text>
+      <Text style={s.bonusSignature}>{bonus.signature}</Text>
+    </View>
+  );
 }
 
-function DecorCard({ seed }: { seed: string }) {
-  const q = pickQuote(seed);
+function BonusGame({ bonus }: { bonus: Extract<BonusContent, { type: "game" }> }) {
   return (
-    <View style={s.decorCard}>
-      <Sparkle size={16} color={CORAL} />
-      <Text style={s.decorTitle}>{"« On respire »"}</Text>
-      <Text style={s.decorQuote}>{"« " + q.text + " »"}</Text>
-      <Text style={s.decorAuthor}>{"— " + q.author}</Text>
+    <View style={s.bonusBody}>
+      <Text style={s.bonusPrompt}>{bonus.prompt}</Text>
+      <View style={s.bonusAnswerBox}>
+        <Text style={s.bonusHint}>{bonus.hint}</Text>
+        <View style={s.bonusAnswerLine} />
+      </View>
+      <Text style={s.bonusSignature}>{"↳ " + bonus.answer}</Text>
+    </View>
+  );
+}
+
+function BonusColoring({
+  bonus,
+}: {
+  bonus: Extract<BonusContent, { type: "coloring" }>;
+}) {
+  return (
+    <View style={s.bonusBody}>
+      <Text style={s.bonusInstruction}>{bonus.instruction}</Text>
+      <View style={s.coloringWrap}>
+        <Svg width={110} height={110} viewBox="0 0 100 100">
+          {bonus.shape.paths.map((d, i) => (
+            <Path key={i} d={d} stroke={INK} strokeWidth={1.6} fill="none" />
+          ))}
+        </Svg>
+      </View>
+      <Text style={s.bonusSignature}>Sors les crayons !</Text>
+    </View>
+  );
+}
+
+function FridgeBonusCard({ seed }: { seed: string }) {
+  const bonus = getFridgeBonus(seed);
+  return (
+    <View style={s.bonusCard}>
+      <View style={s.bonusHeader}>
+        <Sparkle size={10} color={CORAL} />
+        <Text style={s.bonusTitle}>{bonus.title}</Text>
+      </View>
+      {bonus.type === "joke" && <BonusJoke bonus={bonus} />}
+      {bonus.type === "game" && <BonusGame bonus={bonus} />}
+      {bonus.type === "coloring" && <BonusColoring bonus={bonus} />}
+      {bonus.type === "reminder" && (
+        <View style={s.bonusBody}>
+          <Text style={s.bonusInstruction}>{bonus.subtitle}</Text>
+          <View style={s.notesLines}>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <View key={i} style={s.notesLine} />
+            ))}
+          </View>
+          <Text style={s.bonusSignature}>{bonus.footer}</Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -403,24 +477,21 @@ function DecorCard({ seed }: { seed: string }) {
 function GridCell({
   cellIndex,
   byDay,
-  reused,
   seed,
 }: {
   cellIndex: number;
   byDay: SlotsByDay;
-  reused: string[];
   seed: string;
 }) {
   const cell = SHEET_CELLS[cellIndex];
   if (cell.kind === "day")
     return <DayCard day={cell.day} slots={byDay.get(cell.day)} />;
-  if (cell.kind === "notes") return <NotesCard reused={reused} />;
-  return <DecorCard seed={seed} />;
+  if (cell.kind === "notes") return <NotesCard />;
+  return <FridgeBonusCard seed={seed} />;
 }
 
 export function MenuPdfDocument({ menu }: { menu: WeeklyMenuData }) {
   const byDay = groupMealsByDay(menu.meals);
-  const reused = reusedIngredients(menu.meals);
 
   return (
     <Document title="Cookaluna - Menu de la semaine">
@@ -453,7 +524,6 @@ export function MenuPdfDocument({ menu }: { menu: WeeklyMenuData }) {
                     <GridCell
                       cellIndex={i}
                       byDay={byDay}
-                      reused={reused}
                       seed={menu.weekLabel}
                     />
                   </View>

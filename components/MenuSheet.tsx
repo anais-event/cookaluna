@@ -4,23 +4,10 @@ import { DAY_LABELS, DIFFICULTY_LABELS, SLOT_LABELS } from "@/lib/constants";
 import {
   SHEET_CELLS,
   groupMealsByDay,
-  reusedIngredients,
   type SlotsByDay,
 } from "@/lib/menuSheet";
+import { getFridgeBonus, type BonusContent } from "@/lib/fridgeBonus";
 import type { DayKey, MealSlot, MenuMeal, WeeklyMenuData } from "@/lib/types";
-
-const DECOR_QUOTES = [
-  { text: "La vie est un repas partagé.", author: "Proverbe" },
-  { text: "Le bonheur, c'est du temps, pas de la vaisselle.", author: "Cookaluna" },
-  { text: "Moins de charge mentale, plus de place à table.", author: "Cookaluna" },
-  { text: "Un bon repas efface une mauvaise journée.", author: "Proverbe" },
-];
-
-function pickQuote(seed: string) {
-  let h = 0;
-  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
-  return DECOR_QUOTES[h % DECOR_QUOTES.length];
-}
 
 function SlotIcon({ slot }: { slot: MealSlot }) {
   return slot === "lunch" ? (
@@ -72,54 +59,92 @@ function DayCard({ day, slots }: { day: DayKey; slots?: Map<MealSlot, MenuMeal> 
   );
 }
 
-function NotesCard({ reused }: { reused: string[] }) {
+function NotesCard() {
   return (
     <div className="notes-card flex h-full flex-col rounded-2xl border-2 border-dashed border-coral bg-coral-light p-3">
       <p className="flex items-center gap-1.5 font-display text-[10px] font-extrabold uppercase tracking-wider text-coral">
         <Sparkle size={11} color="var(--coral)" /> Pense-bête du frigo
       </p>
-      {reused.length > 0 ? (
-        <>
-          <p className="mt-1 text-[9px] italic text-ink/60">
-            Ingrédients qui reviennent cette semaine
-          </p>
-          <ul className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
-            {reused.map((item) => (
-              <li key={item} className="text-[11px] font-semibold text-ink">
-                • {item}
-              </li>
-            ))}
-          </ul>
-          <p className="mt-1 text-[9px] italic text-ink/60">
-            À racheter ou noter ci-dessous :
-          </p>
-        </>
-      ) : (
-        <p className="mt-1 text-[9px] italic text-ink/60">
-          Courses, envies, restes à finir…
-        </p>
-      )}
+      <p className="mt-1 text-[9px] italic text-ink/60">À noter cette semaine :</p>
       <div className="mt-2 flex flex-1 flex-col justify-between pb-1">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-3.5 border-b border-coral/55" />
+          <div key={i} className="h-4 border-b border-coral/55" />
         ))}
       </div>
+      <p className="mt-1 text-right text-[8.5px] italic text-ink/55">
+        ✎ À compléter à la main
+      </p>
     </div>
   );
 }
 
-function DecorCard({ seed }: { seed: string }) {
-  const q = pickQuote(seed);
+function BonusCard({ bonus }: { bonus: BonusContent }) {
   return (
-    <div className="decor-card flex h-full flex-col items-center justify-center rounded-2xl border-2 border-ink bg-paper p-3 text-center">
-      <Sparkle size={18} color="var(--coral)" />
-      <p className="mt-2 font-display text-[10px] font-extrabold uppercase tracking-widest text-coral">
-        On respire
+    <div className="bonus-card flex h-full flex-col rounded-2xl border-2 border-dashed border-ink bg-paper p-3">
+      <p className="flex items-center gap-1.5 font-display text-[10px] font-extrabold uppercase tracking-wider text-coral">
+        <Sparkle size={11} color="var(--coral)" /> {bonus.title}
       </p>
-      <p className="mt-2 text-[11px] italic leading-snug text-ink">
-        « {q.text} »
-      </p>
-      <p className="mt-1 text-[9px] text-ink/60">— {q.author}</p>
+      <div className="mt-2 flex flex-1 flex-col justify-between">
+        {bonus.type === "joke" && (
+          <>
+            <p className="text-[11.5px] font-semibold leading-snug text-ink">
+              {bonus.setup}
+            </p>
+            <p className="mt-1 text-[11.5px] italic leading-snug text-coral">
+              {bonus.punchline}
+            </p>
+            <p className="mt-2 text-right text-[9px] italic text-ink/55">
+              {bonus.signature}
+            </p>
+          </>
+        )}
+        {bonus.type === "game" && (
+          <>
+            <p className="text-[11px] leading-snug text-ink">{bonus.prompt}</p>
+            <div className="mt-2">
+              <p className="text-[9px] italic text-ink/55">{bonus.hint}</p>
+              <div className="mt-0.5 h-3.5 border-b border-ink/40" />
+            </div>
+            <p className="mt-2 text-right text-[9px] italic text-ink/55">
+              ↳ {bonus.answer}
+            </p>
+          </>
+        )}
+        {bonus.type === "coloring" && (
+          <>
+            <p className="text-[10px] italic text-ink/60">{bonus.instruction}</p>
+            <div className="my-1 flex flex-1 items-center justify-center">
+              <svg viewBox="0 0 100 100" width="88" height="88">
+                {bonus.shape.paths.map((d, i) => (
+                  <path
+                    key={i}
+                    d={d}
+                    stroke="var(--ink)"
+                    strokeWidth={1.6}
+                    fill="none"
+                  />
+                ))}
+              </svg>
+            </div>
+            <p className="mt-1 text-right text-[9px] italic text-ink/55">
+              Sors les crayons !
+            </p>
+          </>
+        )}
+        {bonus.type === "reminder" && (
+          <>
+            <p className="text-[9px] italic text-ink/60">{bonus.subtitle}</p>
+            <div className="mt-1 flex flex-1 flex-col justify-around">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="h-3.5 border-b border-ink/35" />
+              ))}
+            </div>
+            <p className="mt-1 text-right text-[9px] italic text-ink/55">
+              {bonus.footer}
+            </p>
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -127,18 +152,16 @@ function DecorCard({ seed }: { seed: string }) {
 function Cell({
   cellIndex,
   byDay,
-  reused,
   seed,
 }: {
   cellIndex: number;
   byDay: SlotsByDay;
-  reused: string[];
   seed: string;
 }) {
   const cell = SHEET_CELLS[cellIndex];
   if (cell.kind === "day") return <DayCard day={cell.day} slots={byDay.get(cell.day)} />;
-  if (cell.kind === "notes") return <NotesCard reused={reused} />;
-  return <DecorCard seed={seed} />;
+  if (cell.kind === "notes") return <NotesCard />;
+  return <BonusCard bonus={getFridgeBonus(seed)} />;
 }
 
 // La feuille imprimable Cookaluna. Structure fixe 3x3, identique en ecran,
@@ -146,7 +169,6 @@ function Cell({
 // tout tient sur une A4 portrait.
 export function MenuSheet({ menu }: { menu: WeeklyMenuData }) {
   const byDay = groupMealsByDay(menu.meals);
-  const reused = reusedIngredients(menu.meals);
 
   return (
     <div className="menu-sheet flex flex-col bg-paper">
@@ -173,7 +195,7 @@ export function MenuSheet({ menu }: { menu: WeeklyMenuData }) {
 
       <div className="sheet-grid grid flex-1 grid-cols-3 grid-rows-3 gap-2 p-3">
         {SHEET_CELLS.map((_, i) => (
-          <Cell key={i} cellIndex={i} byDay={byDay} reused={reused} seed={menu.weekLabel} />
+          <Cell key={i} cellIndex={i} byDay={byDay} seed={menu.weekLabel} />
         ))}
       </div>
 
