@@ -4,6 +4,7 @@ import { DAY_LABELS, DIFFICULTY_LABELS, SLOT_LABELS } from "@/lib/constants";
 import {
   SHEET_CELLS,
   groupMealsByDay,
+  menuBonusSeed,
   type SlotsByDay,
 } from "@/lib/menuSheet";
 import { getFridgeBonus, type BonusContent } from "@/lib/fridgeBonus";
@@ -169,6 +170,7 @@ function Cell({
 // tout tient sur une A4 portrait.
 export function MenuSheet({ menu }: { menu: WeeklyMenuData }) {
   const byDay = groupMealsByDay(menu.meals);
+  const bonusSeed = menuBonusSeed(menu);
 
   return (
     <div className="menu-sheet flex flex-col bg-paper">
@@ -195,7 +197,7 @@ export function MenuSheet({ menu }: { menu: WeeklyMenuData }) {
 
       <div className="sheet-grid grid flex-1 grid-cols-3 grid-rows-3 gap-2 p-3">
         {SHEET_CELLS.map((_, i) => (
-          <Cell key={i} cellIndex={i} byDay={byDay} seed={menu.weekLabel} />
+          <Cell key={i} cellIndex={i} byDay={byDay} seed={bonusSeed} />
         ))}
       </div>
 

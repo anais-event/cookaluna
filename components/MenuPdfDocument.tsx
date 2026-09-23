@@ -12,6 +12,7 @@ import {
   SHEET_CELLS,
   SHEET_TOKENS,
   groupMealsByDay,
+  menuBonusSeed,
   type SlotsByDay,
 } from "@/lib/menuSheet";
 import { getFridgeBonus, type BonusContent } from "@/lib/fridgeBonus";
@@ -492,6 +493,7 @@ function GridCell({
 
 export function MenuPdfDocument({ menu }: { menu: WeeklyMenuData }) {
   const byDay = groupMealsByDay(menu.meals);
+  const bonusSeed = menuBonusSeed(menu);
 
   return (
     <Document title="Cookaluna - Menu de la semaine">
@@ -524,7 +526,7 @@ export function MenuPdfDocument({ menu }: { menu: WeeklyMenuData }) {
                     <GridCell
                       cellIndex={i}
                       byDay={byDay}
-                      seed={menu.weekLabel}
+                      seed={bonusSeed}
                     />
                   </View>
                 );

@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { createSampleMenu } from "@/lib/sampleMenu";
 import { Header } from "@/components/Header";
@@ -34,18 +35,25 @@ export default function MenuPage() {
   return (
     <>
       <Header />
-      <main className="no-print mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <div className="flex flex-wrap items-end justify-between gap-4">
+      <main className="no-print mx-auto max-w-6xl px-4 py-10 sm:px-6">
+        <Link
+          href="/create"
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink/70 underline-offset-4 transition hover:text-ink hover:underline"
+        >
+          <ArrowLeft size={16} aria-hidden="true" /> Modifier mes réponses
+        </Link>
+
+        <div className="mt-6 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="font-display text-sm font-bold uppercase tracking-widest text-coral">
               {menu.weekLabel}
             </p>
-            <h1 className="font-display text-4xl font-extrabold sm:text-5xl">
+            <h1 className="mt-1 font-display text-4xl font-extrabold sm:text-5xl">
               Votre semaine est servie.
             </h1>
             <p className="mt-2 text-lg text-ink/70">Vous pouvez tout changer.</p>
             {menu.theme && (
-              <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border-2 border-ink bg-coral-light px-3 py-1 text-sm font-bold">
+              <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border-2 border-ink bg-coral-light px-3 py-1 text-sm font-bold">
                 <Sparkle size={13} color="var(--coral)" /> Thème surprise : {menu.theme}
               </p>
             )}
@@ -55,23 +63,23 @@ export default function MenuPage() {
           </Link>
         </div>
 
-        <div className="mt-6">
+        <div className="mt-8">
           <MenuToolbar menu={menu} />
         </div>
 
-        <div className="mt-8">
+        <div className="mt-10">
           <WeeklyMenu />
         </div>
 
         {/* Aperçu impression */}
-        <section className="mt-14">
+        <section className="mt-16">
           <h2 className="font-display text-2xl font-extrabold">
             Aperçu impression
           </h2>
           <p className="mt-1 text-ink/70">
             Voilà à quoi ressemblera votre feuille, prête pour le frigo.
           </p>
-          <div className="mt-5">
+          <div className="mt-6">
             <PrintPreview menu={menu} />
           </div>
         </section>

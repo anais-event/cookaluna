@@ -1,6 +1,17 @@
 import { DAY_ORDER } from "./constants";
 import type { DayKey, MealSlot, MenuMeal, WeeklyMenuData } from "./types";
 
+// Seed pour la surprise imprimee. On combine la semaine ET la signature
+// du menu genere : chaque regeneration produit un nouveau bonus, meme
+// pour la meme semaine. Reproductible : meme menu -> meme surprise.
+export function menuBonusSeed(menu: WeeklyMenuData): string {
+  const sig = menu.meals
+    .map((m) => `${m.day}:${m.slot}:${m.name}`)
+    .sort()
+    .join("|");
+  return `${menu.weekLabel}::${sig}`;
+}
+
 // Ordre fixe lundi -> dimanche pour la feuille imprimable.
 // Independant de la date du jour : le document doit rester identique quelle
 // que soit la journee ou l'utilisateur genere son PDF.
