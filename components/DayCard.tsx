@@ -8,13 +8,16 @@ import { DAY_LABELS, SLOT_LABELS } from "@/lib/constants";
 import { MealCard } from "./MealCard";
 import { ManualMealInput } from "./ManualMealInput";
 import { MealEditModal } from "./MealEditModal";
+import { RecipeModal } from "./RecipeModal";
+import { getMealById } from "@/lib/catalog";
 import type { DayKey, MealSlot, MenuMeal } from "@/lib/types";
 
 type EditState = { slot: MealSlot; mode: "manual" | "change" } | null;
 
 export function DayCard({ day, slots }: { day: DayKey; slots: MealSlot[] }) {
-  const { menu, replaceMealAt, updateMealAt, clearMealAt } = useStore();
+  const { menu, profile, replaceMealAt, updateMealAt, clearMealAt } = useStore();
   const [edit, setEdit] = useState<EditState>(null);
+  const [recipeMeal, setRecipeMeal] = useState<MenuMeal | null>(null);
 
   const mealAt = (slot: MealSlot): MenuMeal | undefined =>
     menu?.meals.find((m) => m.day === day && m.slot === slot);
@@ -82,6 +85,11 @@ export function DayCard({ day, slots }: { day: DayKey; slots: MealSlot[] }) {
                   onChange={() => setEdit({ slot, mode: "change" })}
                   onEdit={() => setEdit({ slot, mode: "manual" })}
                   onDelete={() => clearMealAt(day, slot)}
+                  onViewRecipe={
+                    meal.mealId && getMealById(meal.mealId)?.recipe
+                      ? () => setRecipeMeal(meal)
+                      : undefined
+                  }
                 />
               )}
 
@@ -99,6 +107,14 @@ export function DayCard({ day, slots }: { day: DayKey; slots: MealSlot[] }) {
           );
         })}
       </div>
+
+      {recipeMeal && (
+        <RecipeModal
+          meal={recipeMeal}
+          profile={profile}
+          onClose={() => setRecipeMeal(null)}
+        />
+      )}
     </div>
   );
 }

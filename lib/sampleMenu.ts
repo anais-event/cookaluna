@@ -1,25 +1,29 @@
 import { buildWeekLabel } from "./generator";
+import { getMealByName } from "./catalog";
 import type { MenuMeal, WeeklyMenuData } from "./types";
 
-// Menu de démonstration affichable immédiatement (landing + première visite).
 const M = (
   day: MenuMeal["day"],
   slot: MenuMeal["slot"],
   name: string,
   prepTime: number,
   difficulty: MenuMeal["difficulty"],
-): MenuMeal => ({
-  day,
-  slot,
-  name,
-  description: "",
-  prepTime,
-  difficulty,
-  ingredients: [],
-  tags: [],
-  equipment: ["stovetop"],
-  reuseIngredients: [],
-});
+): MenuMeal => {
+  const cat = getMealByName(name);
+  return {
+    day,
+    slot,
+    name,
+    description: cat?.description ?? "",
+    prepTime,
+    difficulty,
+    ingredients: cat?.ingredients ?? [],
+    tags: cat?.tags ?? [],
+    equipment: cat?.requiredEquipment ?? ["stovetop"],
+    reuseIngredients: cat?.reuseIngredients ?? [],
+    mealId: cat?.id,
+  };
+};
 
 export function createSampleMenu(): WeeklyMenuData {
   const meals: MenuMeal[] = [
@@ -33,7 +37,7 @@ export function createSampleMenu(): WeeklyMenuData {
     M("thursday", "dinner", "Gratin de courgettes & chèvre", 40, "easy"),
     M("friday", "lunch", "Croque-monsieur & salade", 15, "very_easy"),
     M("friday", "dinner", "Pizza maison express", 25, "easy"),
-    M("saturday", "lunch", "Poulet rôti, pommes de terre", 60, "easy"),
+    M("saturday", "lunch", "Poulet rôti & pommes de terre", 60, "easy"),
     M("saturday", "dinner", "Pâtes crémeuses aux champignons", 25, "easy"),
     M("sunday", "lunch", "Lasagnes maison", 75, "advanced"),
     M("sunday", "dinner", "Soupe de légumes & tartines", 30, "very_easy"),

@@ -294,10 +294,102 @@ h3,
     break-inside: avoid;
     page-break-inside: avoid;
   }
+
+  /* Quand la modale recette est ouverte, masquer le menu sheet */
+  body[data-print-recipe="true"] .menu-sheet {
+    display: none !important;
+  }
 }
 
 /* Si l'utilisateur imprime en noir et blanc, la structure reste lisible :
    les libellés de jour ont un soulignement noir et les cellules des bordures. */
 .print-only {
   display: none;
+}
+
+/* ------- Fiche recette imprimable ------- */
+.recipe-sheet {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 15mm 18mm;
+  font-family: var(--font-body, system-ui, sans-serif);
+  color: #111;
+  background: #fff;
+}
+.recipe-sheet-header {
+  text-align: center;
+  margin-bottom: 8mm;
+  padding-bottom: 6mm;
+  border-bottom: 3px solid #111;
+}
+.recipe-sheet-brand {
+  font-size: 11pt;
+  font-weight: 900;
+  letter-spacing: 0.3em;
+  color: var(--coral, #FF6B5F);
+  margin-bottom: 4mm;
+}
+.recipe-sheet-title {
+  font-size: 22pt;
+  font-weight: 900;
+  line-height: 1.2;
+  margin: 0;
+}
+.recipe-sheet-meta {
+  font-size: 11pt;
+  margin-top: 3mm;
+  color: #444;
+}
+.recipe-sheet-body {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 8mm;
+}
+.recipe-sheet-section {
+  font-size: 10pt;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  color: var(--coral, #FF6B5F);
+  margin-bottom: 4mm;
+}
+.recipe-sheet-ingredients ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.recipe-sheet-ingredients li {
+  font-size: 10pt;
+  padding: 1.5mm 0;
+  border-bottom: 1px solid #eee;
+}
+.recipe-sheet-steps ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.recipe-sheet-steps li {
+  font-size: 10pt;
+  line-height: 1.6;
+  margin-bottom: 3mm;
+}
+.recipe-step-num {
+  font-weight: 900;
+  color: var(--coral, #FF6B5F);
+}
+.recipe-sheet-notes {
+  grid-column: 1 / -1;
+  font-size: 9pt;
+  color: #666;
+  margin-top: 4mm;
+  padding: 3mm;
+  background: #f9f5f0;
+  border-radius: 2mm;
+}
+.recipe-sheet-footer {
+  text-align: center;
+  font-size: 8pt;
+  color: #999;
+  margin-top: 10mm;
+  padding-top: 4mm;
+  border-top: 1px solid #ddd;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Clock, Repeat, Pencil, Shuffle, Trash2, MoreHorizontal } from "lucide-react";
+import { Clock, Repeat, Pencil, Shuffle, Trash2, MoreHorizontal, BookOpen } from "lucide-react";
 import { DIFFICULTY_LABELS, EQUIPMENT_LABELS } from "@/lib/constants";
 import type { MenuMeal } from "@/lib/types";
 
@@ -10,11 +10,13 @@ export function MealCard({
   onChange,
   onEdit,
   onDelete,
+  onViewRecipe,
 }: {
   meal: MenuMeal;
   onChange: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  onViewRecipe?: () => void;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -81,6 +83,19 @@ export function MealCard({
                 role="menu"
                 className="absolute left-0 top-11 z-50 w-44 overflow-hidden rounded-xl border-[3px] border-ink bg-white shadow-pop"
               >
+                {onViewRecipe && (
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      onViewRecipe();
+                    }}
+                    className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm font-bold hover:bg-coral-light"
+                  >
+                    <BookOpen size={15} aria-hidden="true" /> Voir la recette
+                  </button>
+                )}
                 <button
                   type="button"
                   role="menuitem"
@@ -88,7 +103,7 @@ export function MealCard({
                     setMenuOpen(false);
                     onEdit();
                   }}
-                  className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm font-bold hover:bg-coral-light"
+                  className="flex w-full items-center gap-2 border-t-2 border-ink/10 px-3 py-2.5 text-left text-sm font-bold hover:bg-coral-light"
                 >
                   <Pencil size={15} aria-hidden="true" /> Modifier
                 </button>

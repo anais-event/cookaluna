@@ -1,4 +1,4 @@
-import type { Allergen, CostLevel, Diet, Difficulty, Equipment, Meal } from "./types";
+import type { Allergen, CostLevel, Diet, Difficulty, Equipment, Meal, Recipe } from "./types";
 
 // Base alimentaire utilisée pour dériver les régimes compatibles.
 type Base = "meat" | "pork" | "fish" | "veg" | "vegan";
@@ -36,6 +36,7 @@ interface Raw {
   alt?: Equipment[];
   reuse?: string[];
   category: string;
+  recipe?: Recipe;
 }
 
 function meal(r: Raw): Meal {
@@ -55,12 +56,33 @@ function meal(r: Raw): Meal {
     alternativeEquipment: r.alt ?? [],
     reuseIngredients: r.reuse ?? [],
     category: r.category,
+    recipe: r.recipe,
   };
 }
 
 const RAW: Raw[] = [
   // ---------- POULET ----------
-  { id: "poulet-roti", name: "Poulet rôti & pommes de terre", description: "Poulet doré au four, pommes de terre fondantes.", prepTime: 60, difficulty: "easy", tags: ["comfort", "familial", "batch"], ingredients: ["poulet entier", "pommes de terre", "thym", "ail", "huile d'olive"], kid: true, base: "meat", gf: true, lf: true, cost: "normal", req: ["oven"], reuse: ["poulet"], category: "chicken" },
+  { id: "poulet-roti", name: "Poulet rôti & pommes de terre", description: "Poulet doré au four, pommes de terre fondantes.", prepTime: 60, difficulty: "easy", tags: ["comfort", "familial", "batch"], ingredients: ["poulet entier", "pommes de terre", "thym", "ail", "huile d'olive"], kid: true, base: "meat", gf: true, lf: true, cost: "normal", req: ["oven"], reuse: ["poulet"], category: "chicken", recipe: {
+    servings: 4,
+    ingredients: [
+      { name: "poulet entier", quantity: 1.5, unit: "kg" },
+      { name: "pommes de terre", quantity: 800, unit: "g" },
+      { name: "gousses d'ail", quantity: 4, unit: "" },
+      { name: "branches de thym", quantity: 4, unit: "", scalable: false },
+      { name: "huile d'olive", quantity: 3, unit: "c. à soupe" },
+      { name: "sel et poivre", quantity: 0, unit: "", scalable: false },
+    ],
+    steps: [
+      "Préchauffer le four à 200 °C.",
+      "Éplucher les pommes de terre et les couper en quartiers.",
+      "Frotter le poulet avec l'huile d'olive, le sel et le poivre.",
+      "Disposer le poulet dans un plat à four, entourer des pommes de terre et de l'ail en chemise.",
+      "Ajouter le thym sur le poulet.",
+      "Enfourner 50 minutes. Arroser le poulet de jus à mi-cuisson.",
+      "Vérifier la cuisson : le jus qui coule de la cuisse doit être clair.",
+      "Laisser reposer 5 minutes avant de découper.",
+    ],
+  } },
   { id: "wraps-poulet", name: "Wraps au poulet & crudités", description: "Galettes garnies de poulet, salade et sauce yaourt.", prepTime: 20, difficulty: "very_easy", tags: ["express", "nomade"], ingredients: ["tortillas", "poulet", "salade", "tomate", "yaourt"], kid: true, base: "meat", allergens: ["gluten", "milk"], cost: "normal", req: ["stovetop"], reuse: ["poulet"], category: "chicken" },
   { id: "bowl-poulet-riz", name: "Bowl poulet, riz & crudités", description: "Bol équilibré poulet grillé, riz et légumes croquants.", prepTime: 25, difficulty: "easy", tags: ["healthy", "bowl"], ingredients: ["poulet", "riz", "concombre", "carotte", "sauce soja"], kid: true, base: "meat", gf: true, allergens: ["soy"], cost: "normal", req: ["stovetop"], reuse: ["poulet", "riz"], category: "chicken" },
   { id: "poulet-airfryer", name: "Poulet croustillant Airfryer", description: "Pilons de poulet ultra croustillants sans friture.", prepTime: 30, difficulty: "easy", tags: ["airfryer", "kids"], ingredients: ["pilons de poulet", "paprika", "chapelure", "huile"], kid: true, base: "meat", allergens: ["gluten"], cost: "normal", req: ["airfryer"], alt: ["oven"], reuse: ["poulet"], category: "chicken" },
@@ -69,11 +91,53 @@ const RAW: Raw[] = [
   { id: "poulet-basquaise", name: "Poulet basquaise", description: "Poulet mijoté aux poivrons et tomates.", prepTime: 45, difficulty: "medium", tags: ["france", "mijote"], ingredients: ["poulet", "poivron", "tomate", "oignon", "riz"], base: "meat", gf: true, lf: true, cost: "normal", req: ["stovetop"], category: "chicken" },
   { id: "poulet-citron-cocotte", name: "Poulet citron à la cocotte-minute", description: "Poulet fondant citronné, prêt en un éclair.", prepTime: 30, difficulty: "easy", tags: ["rapide", "cocotte"], ingredients: ["poulet", "citron", "pommes de terre", "ail"], base: "meat", gf: true, lf: true, req: ["pressure_cooker"], alt: ["stovetop"], reuse: ["poulet"], category: "chicken" },
   { id: "brochettes-poulet-plancha", name: "Brochettes de poulet à la plancha", description: "Brochettes marinées grillées à la plancha.", prepTime: 25, difficulty: "easy", tags: ["ete", "grill"], ingredients: ["poulet", "poivron", "oignon", "marinade"], base: "meat", gf: true, lf: true, req: ["plancha"], alt: ["stovetop", "bbq"], category: "chicken" },
-  { id: "nuggets-maison", name: "Nuggets de poulet maison", description: "Nuggets dorés faits maison, sauce au choix.", prepTime: 30, difficulty: "easy", tags: ["kids", "airfryer"], ingredients: ["poulet", "chapelure", "œuf", "farine"], kid: true, base: "meat", allergens: ["gluten", "eggs"], req: ["airfryer"], alt: ["oven", "stovetop"], category: "chicken" },
+  { id: "nuggets-maison", name: "Nuggets de poulet maison", description: "Nuggets dorés faits maison, sauce au choix.", prepTime: 30, difficulty: "easy", tags: ["kids", "airfryer"], ingredients: ["poulet", "chapelure", "œuf", "farine"], kid: true, base: "meat", allergens: ["gluten", "eggs"], req: ["airfryer"], alt: ["oven", "stovetop"], category: "chicken", recipe: {
+    servings: 4,
+    ingredients: [
+      { name: "blancs de poulet", quantity: 500, unit: "g" },
+      { name: "chapelure", quantity: 100, unit: "g" },
+      { name: "œufs", quantity: 2, unit: "" },
+      { name: "farine", quantity: 50, unit: "g" },
+      { name: "paprika", quantity: 1, unit: "c. à café" },
+      { name: "sel et poivre", quantity: 0, unit: "", scalable: false },
+    ],
+    steps: [
+      "Couper les blancs de poulet en morceaux de la taille d'un nugget.",
+      "Préparer trois assiettes : farine, œufs battus, chapelure mélangée au paprika.",
+      "Passer chaque morceau dans la farine, puis l'œuf, puis la chapelure.",
+      "Disposer les nuggets dans le panier de l'airfryer sans les superposer.",
+      "Cuire 12 minutes à 200 °C en retournant à mi-cuisson.",
+      "Servir avec du ketchup, de la moutarde ou une sauce au yaourt.",
+    ],
+  } },
 
   // ---------- VIANDE ----------
   { id: "steak-hache-puree", name: "Steak haché & purée maison", description: "Grand classique réconfortant, purée crémeuse.", prepTime: 30, difficulty: "very_easy", tags: ["comfort", "kids"], ingredients: ["steak haché", "pommes de terre", "lait", "beurre"], kid: true, base: "meat", gf: true, allergens: ["milk"], req: ["stovetop"], category: "beef" },
-  { id: "chili-con-carne", name: "Chili con carne", description: "Bœuf haché, haricots rouges, épices douces.", prepTime: 40, difficulty: "easy", tags: ["batch", "monde"], ingredients: ["bœuf haché", "haricots rouges", "tomate", "riz", "épices"], base: "meat", gf: true, lf: true, cost: "normal", req: ["stovetop"], reuse: ["riz"], category: "beef" },
+  { id: "chili-con-carne", name: "Chili con carne", description: "Bœuf haché, haricots rouges, épices douces.", prepTime: 40, difficulty: "easy", tags: ["batch", "monde"], ingredients: ["bœuf haché", "haricots rouges", "tomate", "riz", "épices"], base: "meat", gf: true, lf: true, cost: "normal", req: ["stovetop"], reuse: ["riz"], category: "beef", recipe: {
+    servings: 4,
+    ingredients: [
+      { name: "bœuf haché", quantity: 500, unit: "g" },
+      { name: "haricots rouges (égouttés)", quantity: 400, unit: "g" },
+      { name: "pulpe de tomate", quantity: 400, unit: "g" },
+      { name: "oignon", quantity: 1, unit: "" },
+      { name: "gousse d'ail", quantity: 2, unit: "" },
+      { name: "cumin", quantity: 1, unit: "c. à café" },
+      { name: "paprika", quantity: 1, unit: "c. à café" },
+      { name: "huile d'olive", quantity: 1, unit: "c. à soupe" },
+      { name: "riz", quantity: 250, unit: "g" },
+      { name: "sel et poivre", quantity: 0, unit: "", scalable: false },
+    ],
+    steps: [
+      "Émincer l'oignon et l'ail.",
+      "Faire chauffer l'huile dans une grande cocotte. Faire revenir l'oignon 3 minutes.",
+      "Ajouter le bœuf haché et le faire dorer en l'émiettant.",
+      "Ajouter l'ail, le cumin et le paprika. Mélanger 1 minute.",
+      "Verser la pulpe de tomate, les haricots rouges égouttés, saler et poivrer.",
+      "Laisser mijoter 25 minutes à feu doux en remuant de temps en temps.",
+      "Pendant ce temps, cuire le riz selon les instructions du paquet.",
+      "Servir le chili sur le riz.",
+    ],
+  } },
   { id: "boeuf-bourguignon", name: "Bœuf bourguignon", description: "Bœuf mijoté longuement, carottes et champignons.", prepTime: 120, difficulty: "advanced", tags: ["france", "dimanche"], ingredients: ["bœuf", "carotte", "champignon", "oignon", "bouillon"], base: "meat", gf: true, lf: true, cost: "treat", req: ["stovetop"], category: "beef" },
   { id: "tacos-boeuf", name: "Tacos maison express", description: "Tortillas garnies de bœuf épicé et cheddar.", prepTime: 20, difficulty: "very_easy", tags: ["express", "kids"], ingredients: ["bœuf haché", "tortillas", "cheddar", "salade", "sauce"], kid: true, base: "meat", allergens: ["gluten", "milk"], req: ["stovetop"], category: "beef" },
   { id: "hachis-parmentier", name: "Hachis parmentier", description: "Bœuf et purée gratinés au four.", prepTime: 50, difficulty: "medium", tags: ["comfort", "familial"], ingredients: ["bœuf haché", "pommes de terre", "lait", "fromage"], kid: true, base: "meat", allergens: ["milk"], req: ["oven"], category: "beef" },
@@ -89,7 +153,26 @@ const RAW: Raw[] = [
   { id: "saute-porc-caramel", name: "Porc au caramel", description: "Porc mijoté façon asiatique, sauce caramel.", prepTime: 35, difficulty: "medium", tags: ["asie", "mijote"], ingredients: ["porc", "sauce soja", "sucre", "riz"], base: "pork", allergens: ["soy"], req: ["stovetop"], reuse: ["riz"], category: "pork" },
 
   // ---------- POISSON ----------
-  { id: "saumon-roti", name: "Saumon rôti, pommes de terre & brocoli", description: "Pavé de saumon au four, légumes vapeur.", prepTime: 30, difficulty: "easy", tags: ["healthy", "omega3"], ingredients: ["saumon", "pommes de terre", "brocoli", "citron"], base: "fish", gf: true, lf: true, allergens: ["fish"], cost: "treat", req: ["oven"], alt: ["airfryer"], category: "fish" },
+  { id: "saumon-roti", name: "Saumon rôti, pommes de terre & brocoli", description: "Pavé de saumon au four, légumes vapeur.", prepTime: 30, difficulty: "easy", tags: ["healthy", "omega3"], ingredients: ["saumon", "pommes de terre", "brocoli", "citron"], base: "fish", gf: true, lf: true, allergens: ["fish"], cost: "treat", req: ["oven"], alt: ["airfryer"], category: "fish", recipe: {
+    servings: 4,
+    ingredients: [
+      { name: "pavés de saumon", quantity: 4, unit: "" },
+      { name: "pommes de terre", quantity: 600, unit: "g" },
+      { name: "brocoli", quantity: 400, unit: "g" },
+      { name: "citron", quantity: 1, unit: "" },
+      { name: "huile d'olive", quantity: 2, unit: "c. à soupe" },
+      { name: "sel et poivre", quantity: 0, unit: "", scalable: false },
+    ],
+    steps: [
+      "Préchauffer le four à 200 °C.",
+      "Éplucher les pommes de terre, les couper en rondelles et les disposer sur une plaque recouverte de papier cuisson.",
+      "Arroser d'un filet d'huile d'olive, saler. Enfourner 15 minutes.",
+      "Sortir la plaque, poser les pavés de saumon et les bouquets de brocoli à côté des pommes de terre.",
+      "Arroser le saumon d'un filet de citron et d'huile d'olive.",
+      "Remettre au four 12 à 15 minutes.",
+      "Servir dès la sortie du four.",
+    ],
+  } },
   { id: "cabillaud-airfryer", name: "Cabillaud pané à l'Airfryer", description: "Filets de cabillaud croustillants, quartiers de citron.", prepTime: 20, difficulty: "easy", tags: ["airfryer", "rapide"], ingredients: ["cabillaud", "chapelure", "citron", "persil"], kid: true, base: "fish", allergens: ["fish", "gluten"], req: ["airfryer"], alt: ["oven"], category: "fish" },
   { id: "pates-thon", name: "Pâtes au thon & tomate", description: "Pâtes rapides, thon et sauce tomate.", prepTime: 20, difficulty: "very_easy", tags: ["express", "placard"], ingredients: ["pâtes", "thon", "tomate", "ail"], kid: true, base: "fish", allergens: ["fish", "gluten"], cost: "low", req: ["stovetop"], category: "pasta" },
   { id: "papillote-poisson", name: "Papillote de poisson & légumes", description: "Poisson blanc et légumes cuits en papillote.", prepTime: 30, difficulty: "easy", tags: ["healthy", "four"], ingredients: ["poisson blanc", "courgette", "tomate", "citron"], base: "fish", gf: true, lf: true, allergens: ["fish"], req: ["oven"], category: "fish" },
@@ -99,7 +182,29 @@ const RAW: Raw[] = [
   { id: "fish-and-chips", name: "Fish & chips maison", description: "Poisson pané et frites à l'airfryer.", prepTime: 35, difficulty: "medium", tags: ["kids", "airfryer"], ingredients: ["poisson blanc", "pommes de terre", "farine", "citron"], kid: true, base: "fish", allergens: ["fish", "gluten"], req: ["airfryer"], alt: ["oven"], category: "fish" },
 
   // ---------- PATES ----------
-  { id: "pates-bolo-veg", name: "Pâtes bolognaise végétale", description: "Sauce riche aux lentilles, façon bolognaise.", prepTime: 30, difficulty: "easy", tags: ["veggie", "batch"], ingredients: ["pâtes", "lentilles", "tomate", "carotte", "oignon"], kid: true, base: "vegan", allergens: ["gluten"], cost: "low", req: ["stovetop"], category: "pasta" },
+  { id: "pates-bolo-veg", name: "Pâtes bolognaise végétale", description: "Sauce riche aux lentilles, façon bolognaise.", prepTime: 30, difficulty: "easy", tags: ["veggie", "batch"], ingredients: ["pâtes", "lentilles", "tomate", "carotte", "oignon"], kid: true, base: "vegan", allergens: ["gluten"], cost: "low", req: ["stovetop"], category: "pasta", recipe: {
+    servings: 4,
+    ingredients: [
+      { name: "pâtes", quantity: 400, unit: "g" },
+      { name: "lentilles vertes", quantity: 200, unit: "g" },
+      { name: "pulpe de tomate", quantity: 400, unit: "g" },
+      { name: "carotte", quantity: 2, unit: "" },
+      { name: "oignon", quantity: 1, unit: "" },
+      { name: "gousse d'ail", quantity: 2, unit: "" },
+      { name: "huile d'olive", quantity: 2, unit: "c. à soupe" },
+      { name: "sel et poivre", quantity: 0, unit: "", scalable: false },
+    ],
+    steps: [
+      "Cuire les lentilles 20 minutes dans de l'eau bouillante salée. Égoutter.",
+      "Émincer l'oignon, l'ail et râper les carottes.",
+      "Faire revenir l'oignon dans l'huile d'olive 3 minutes.",
+      "Ajouter l'ail et la carotte, cuire 2 minutes.",
+      "Verser la pulpe de tomate, ajouter les lentilles cuites, saler et poivrer.",
+      "Laisser mijoter 10 minutes à feu doux.",
+      "Pendant ce temps, cuire les pâtes selon les instructions du paquet.",
+      "Servir les pâtes nappées de sauce.",
+    ],
+  } },
   { id: "pates-champignons", name: "Pâtes crémeuses aux champignons", description: "Pâtes onctueuses, champignons et crème.", prepTime: 25, difficulty: "easy", tags: ["comfort", "veggie"], ingredients: ["pâtes", "champignon", "crème", "ail", "persil"], kid: true, base: "veg", allergens: ["gluten", "milk"], req: ["stovetop"], category: "pasta" },
   { id: "pates-pesto", name: "Pâtes au pesto & tomates cerises", description: "Pâtes express, pesto et tomates cerises.", prepTime: 15, difficulty: "very_easy", tags: ["express", "veggie"], ingredients: ["pâtes", "pesto", "tomates cerises", "parmesan"], kid: true, base: "veg", allergens: ["gluten", "milk", "tree_nuts"], req: ["stovetop"], category: "pasta" },
   { id: "one-pot-pasta", name: "One pot pasta tomate-basilic", description: "Pâtes cuites dans la sauce, une seule casserole.", prepTime: 20, difficulty: "very_easy", tags: ["express", "veggie"], ingredients: ["pâtes", "tomate", "basilic", "ail", "oignon"], kid: true, base: "vegan", allergens: ["gluten"], cost: "low", req: ["stovetop"], category: "pasta" },
@@ -115,16 +220,77 @@ const RAW: Raw[] = [
   { id: "riz-poulet-thermomix", name: "Riz au poulet façon Thermomix", description: "Riz et poulet cuits ensemble au robot.", prepTime: 30, difficulty: "easy", tags: ["thermomix", "familial"], ingredients: ["riz", "poulet", "poivron", "bouillon"], base: "meat", gf: true, lf: true, req: ["thermomix"], alt: ["stovetop"], reuse: ["poulet"], category: "rice" },
 
   // ---------- OEUFS ----------
-  { id: "omelette-pdt", name: "Omelette pommes de terre & salade", description: "Omelette moelleuse aux pommes de terre.", prepTime: 20, difficulty: "very_easy", tags: ["express", "eco"], ingredients: ["œuf", "pommes de terre", "oignon", "salade"], kid: true, base: "veg", gf: true, allergens: ["eggs"], cost: "low", req: ["stovetop"], category: "eggs" },
+  { id: "omelette-pdt", name: "Omelette pommes de terre & salade", description: "Omelette moelleuse aux pommes de terre.", prepTime: 20, difficulty: "very_easy", tags: ["express", "eco"], ingredients: ["œuf", "pommes de terre", "oignon", "salade"], kid: true, base: "veg", gf: true, allergens: ["eggs"], cost: "low", req: ["stovetop"], category: "eggs", recipe: {
+    servings: 4,
+    ingredients: [
+      { name: "œufs", quantity: 8, unit: "" },
+      { name: "pommes de terre", quantity: 400, unit: "g" },
+      { name: "oignon", quantity: 1, unit: "" },
+      { name: "huile d'olive", quantity: 2, unit: "c. à soupe" },
+      { name: "salade verte", quantity: 1, unit: "", scalable: false },
+      { name: "sel et poivre", quantity: 0, unit: "", scalable: false },
+    ],
+    steps: [
+      "Éplucher les pommes de terre et les couper en petits dés.",
+      "Faire chauffer l'huile dans une grande poêle. Faire revenir les dés de pommes de terre 10 minutes à feu moyen.",
+      "Ajouter l'oignon émincé et cuire encore 3 minutes.",
+      "Battre les œufs dans un bol, saler et poivrer.",
+      "Verser les œufs sur les pommes de terre. Cuire à feu doux 5 minutes.",
+      "Retourner l'omelette à l'aide d'une assiette ou la finir sous le grill.",
+      "Servir avec la salade assaisonnée.",
+    ],
+  } },
   { id: "shakshuka", name: "Shakshuka", description: "Œufs pochés dans une sauce tomate épicée.", prepTime: 25, difficulty: "easy", tags: ["monde", "veggie"], ingredients: ["œuf", "tomate", "poivron", "oignon", "cumin"], base: "veg", gf: true, lf: true, allergens: ["eggs"], cost: "low", req: ["stovetop"], category: "eggs" },
   { id: "oeufs-cocotte", name: "Œufs cocotte aux épinards", description: "Œufs fondants cuits au four avec épinards.", prepTime: 20, difficulty: "easy", tags: ["veggie", "four"], ingredients: ["œuf", "épinard", "crème", "fromage"], base: "veg", gf: true, allergens: ["eggs", "milk"], req: ["oven"], category: "eggs" },
   { id: "frittata-courgette", name: "Frittata courgette & feta", description: "Omelette au four garnie de courgette et feta.", prepTime: 30, difficulty: "easy", tags: ["veggie", "batch"], ingredients: ["œuf", "courgette", "feta", "oignon"], base: "veg", gf: true, allergens: ["eggs", "milk"], req: ["oven"], alt: ["stovetop"], category: "eggs" },
 
   // ---------- VEGGIE / VEGAN PLATS ----------
   { id: "gratin-courgettes-chevre", name: "Gratin de courgettes & chèvre", description: "Courgettes gratinées au chèvre.", prepTime: 40, difficulty: "easy", tags: ["veggie", "four"], ingredients: ["courgette", "chèvre", "crème", "chapelure"], base: "veg", allergens: ["milk", "gluten"], req: ["oven"], category: "veggie" },
-  { id: "gratin-dauphinois", name: "Gratin dauphinois", description: "Pommes de terre fondantes à la crème.", prepTime: 60, difficulty: "medium", tags: ["france", "comfort"], ingredients: ["pommes de terre", "crème", "lait", "ail"], kid: true, base: "veg", gf: true, allergens: ["milk"], req: ["oven"], category: "veggie" },
+  { id: "gratin-dauphinois", name: "Gratin dauphinois", description: "Pommes de terre fondantes à la crème.", prepTime: 60, difficulty: "medium", tags: ["france", "comfort"], ingredients: ["pommes de terre", "crème", "lait", "ail"], kid: true, base: "veg", gf: true, allergens: ["milk"], req: ["oven"], category: "veggie", recipe: {
+    servings: 4,
+    ingredients: [
+      { name: "pommes de terre", quantity: 1000, unit: "g" },
+      { name: "crème liquide", quantity: 30, unit: "cl" },
+      { name: "lait", quantity: 20, unit: "cl" },
+      { name: "gousse d'ail", quantity: 1, unit: "" },
+      { name: "noix de muscade", quantity: 1, unit: "pincée", scalable: false },
+      { name: "sel et poivre", quantity: 0, unit: "", scalable: false },
+    ],
+    steps: [
+      "Préchauffer le four à 180 °C.",
+      "Éplucher les pommes de terre et les couper en rondelles fines.",
+      "Frotter un plat à gratin avec la gousse d'ail coupée en deux.",
+      "Disposer les rondelles en couches régulières dans le plat.",
+      "Mélanger la crème, le lait, le sel, le poivre et la muscade.",
+      "Verser le mélange sur les pommes de terre.",
+      "Enfourner 50 minutes. Le gratin est prêt quand le dessus est bien doré.",
+    ],
+  } },
   { id: "curry-legumes-coco", name: "Curry de légumes au lait de coco", description: "Légumes mijotés, curry doux et coco.", prepTime: 30, difficulty: "easy", tags: ["vegan", "monde"], ingredients: ["pois chiches", "courgette", "lait de coco", "curry", "riz"], base: "vegan", gf: true, cost: "low", req: ["stovetop"], reuse: ["riz"], category: "veggie" },
-  { id: "dahl-lentilles", name: "Dahl de lentilles corail", description: "Lentilles corail mijotées aux épices.", prepTime: 30, difficulty: "easy", tags: ["vegan", "eco"], ingredients: ["lentilles corail", "lait de coco", "tomate", "curcuma", "riz"], base: "vegan", gf: true, cost: "low", req: ["stovetop"], reuse: ["riz"], category: "veggie" },
+  { id: "dahl-lentilles", name: "Dahl de lentilles corail", description: "Lentilles corail mijotées aux épices.", prepTime: 30, difficulty: "easy", tags: ["vegan", "eco"], ingredients: ["lentilles corail", "lait de coco", "tomate", "curcuma", "riz"], base: "vegan", gf: true, cost: "low", req: ["stovetop"], reuse: ["riz"], category: "veggie", recipe: {
+    servings: 4,
+    ingredients: [
+      { name: "lentilles corail", quantity: 250, unit: "g" },
+      { name: "lait de coco", quantity: 200, unit: "ml" },
+      { name: "pulpe de tomate", quantity: 400, unit: "g" },
+      { name: "oignon", quantity: 1, unit: "" },
+      { name: "gousse d'ail", quantity: 2, unit: "" },
+      { name: "curcuma", quantity: 1, unit: "c. à café" },
+      { name: "cumin", quantity: 1, unit: "c. à café" },
+      { name: "huile d'olive", quantity: 1, unit: "c. à soupe" },
+      { name: "riz", quantity: 250, unit: "g" },
+      { name: "sel", quantity: 0, unit: "", scalable: false },
+    ],
+    steps: [
+      "Rincer les lentilles corail à l'eau froide.",
+      "Émincer l'oignon et l'ail. Les faire revenir dans l'huile d'olive 3 minutes.",
+      "Ajouter le curcuma et le cumin, mélanger 30 secondes.",
+      "Verser les lentilles, la pulpe de tomate et le lait de coco.",
+      "Couvrir et laisser mijoter 15 à 20 minutes en remuant de temps en temps, jusqu'à ce que les lentilles soient fondantes.",
+      "Cuire le riz à part selon les instructions du paquet.",
+      "Servir le dahl sur le riz.",
+    ],
+  } },
   { id: "chili-vegetarien", name: "Chili végétarien", description: "Haricots rouges, maïs et légumes épicés.", prepTime: 35, difficulty: "easy", tags: ["vegan", "batch"], ingredients: ["haricots rouges", "maïs", "tomate", "poivron", "riz"], base: "vegan", gf: true, cost: "low", req: ["stovetop"], reuse: ["riz"], category: "veggie" },
   { id: "ratatouille", name: "Ratatouille & riz", description: "Légumes du soleil mijotés, servis avec du riz.", prepTime: 45, difficulty: "easy", tags: ["france", "vegan"], ingredients: ["aubergine", "courgette", "poivron", "tomate", "riz"], base: "vegan", gf: true, cost: "low", req: ["stovetop"], reuse: ["riz"], category: "veggie" },
   { id: "boulettes-veg-thermomix", name: "Boulettes de lentilles (Thermomix)", description: "Boulettes végé préparées au robot, sauce tomate.", prepTime: 35, difficulty: "medium", tags: ["thermomix", "vegan"], ingredients: ["lentilles", "flocons d'avoine", "tomate", "oignon"], base: "vegan", allergens: ["gluten"], req: ["thermomix"], alt: ["stovetop"], category: "veggie" },
@@ -138,7 +304,27 @@ const RAW: Raw[] = [
   { id: "gratin-legumes-airfryer", name: "Légumes rôtis à l'Airfryer", description: "Assortiment de légumes rôtis, herbes.", prepTime: 25, difficulty: "very_easy", tags: ["airfryer", "vegan"], ingredients: ["courgette", "poivron", "oignon", "pommes de terre", "herbes"], base: "vegan", gf: true, cost: "low", req: ["airfryer"], alt: ["oven"], category: "gratin" },
 
   // ---------- PIZZAS / TARTES ----------
-  { id: "pizza-maison", name: "Pizza maison express", description: "Pâte, sauce tomate, mozzarella et garniture.", prepTime: 25, difficulty: "easy", tags: ["kids", "convivial"], ingredients: ["pâte à pizza", "tomate", "mozzarella", "jambon"], kid: true, base: "pork", allergens: ["gluten", "milk"], req: ["oven"], category: "pizza" },
+  { id: "pizza-maison", name: "Pizza maison express", description: "Pâte, sauce tomate, mozzarella et garniture.", prepTime: 25, difficulty: "easy", tags: ["kids", "convivial"], ingredients: ["pâte à pizza", "tomate", "mozzarella", "jambon"], kid: true, base: "pork", allergens: ["gluten", "milk"], req: ["oven"], category: "pizza", recipe: {
+    servings: 4,
+    ingredients: [
+      { name: "pâte à pizza (prête à dérouler)", quantity: 1, unit: "", scalable: false },
+      { name: "coulis de tomate", quantity: 200, unit: "g" },
+      { name: "mozzarella", quantity: 200, unit: "g" },
+      { name: "jambon blanc", quantity: 4, unit: "tranches" },
+      { name: "origan", quantity: 1, unit: "c. à café", scalable: false },
+      { name: "huile d'olive", quantity: 1, unit: "c. à soupe", scalable: false },
+    ],
+    steps: [
+      "Préchauffer le four à 220 °C.",
+      "Dérouler la pâte sur une plaque recouverte de papier cuisson.",
+      "Étaler le coulis de tomate en couche fine.",
+      "Répartir la mozzarella coupée en morceaux et le jambon déchiré.",
+      "Saupoudrer d'origan et d'un filet d'huile d'olive.",
+      "Enfourner 10 à 12 minutes, jusqu'à ce que le bord soit bien doré.",
+      "Couper en parts et servir aussitôt.",
+    ],
+    notes: "Pour 2 grandes pizzas, doubler la pâte et cuire en deux fournées.",
+  } },
   { id: "pizza-veggie", name: "Pizza végétarienne", description: "Pizza légumes grillés et mozzarella.", prepTime: 25, difficulty: "easy", tags: ["veggie", "convivial"], ingredients: ["pâte à pizza", "tomate", "mozzarella", "courgette", "poivron"], kid: true, base: "veg", allergens: ["gluten", "milk"], req: ["oven"], category: "pizza" },
   { id: "tarte-legumes", name: "Tarte fine aux légumes", description: "Pâte feuilletée et légumes de saison.", prepTime: 35, difficulty: "easy", tags: ["veggie", "leger"], ingredients: ["pâte feuilletée", "courgette", "tomate", "chèvre"], base: "veg", allergens: ["gluten", "milk"], req: ["oven"], category: "pizza" },
   { id: "quiche-legumes", name: "Quiche aux légumes", description: "Tarte salée aux légumes et crème.", prepTime: 45, difficulty: "medium", tags: ["veggie", "batch"], ingredients: ["pâte brisée", "courgette", "œuf", "crème"], base: "veg", allergens: ["gluten", "eggs", "milk"], req: ["oven"], category: "pizza" },
@@ -160,7 +346,28 @@ const RAW: Raw[] = [
 
   // ---------- WRAPS / SANDWICHS / TARTINES ----------
   { id: "quesadillas", name: "Quesadillas poulet & fromage", description: "Tortillas dorées garnies de poulet fondant.", prepTime: 20, difficulty: "very_easy", tags: ["express", "kids"], ingredients: ["tortillas", "poulet", "fromage", "poivron"], kid: true, base: "meat", allergens: ["gluten", "milk"], req: ["stovetop"], reuse: ["poulet"], category: "wrap" },
-  { id: "wraps-veggie", name: "Wraps falafel & crudités", description: "Falafels, crudités et sauce blanche en galette.", prepTime: 20, difficulty: "easy", tags: ["veggie", "nomade"], ingredients: ["tortillas", "falafel", "salade", "tomate", "sauce"], base: "veg", allergens: ["gluten", "sesame"], req: ["stovetop"], category: "wrap" },
+  { id: "wraps-veggie", name: "Wraps falafel & crudités", description: "Falafels, crudités et sauce blanche en galette.", prepTime: 20, difficulty: "easy", tags: ["veggie", "nomade"], ingredients: ["tortillas", "falafel", "salade", "tomate", "sauce"], base: "veg", allergens: ["gluten", "sesame"], req: ["stovetop"], category: "wrap", recipe: {
+    servings: 4,
+    ingredients: [
+      { name: "tortillas", quantity: 4, unit: "" },
+      { name: "falafels (prêts ou surgelés)", quantity: 12, unit: "" },
+      { name: "salade verte", quantity: 1, unit: "", scalable: false },
+      { name: "tomate", quantity: 2, unit: "" },
+      { name: "concombre", quantity: 0.5, unit: "" },
+      { name: "yaourt nature", quantity: 100, unit: "g" },
+      { name: "jus de citron", quantity: 1, unit: "c. à soupe" },
+      { name: "sel et poivre", quantity: 0, unit: "", scalable: false },
+    ],
+    steps: [
+      "Réchauffer les falafels à la poêle ou au four selon les instructions.",
+      "Couper la tomate en dés et le concombre en bâtonnets.",
+      "Mélanger le yaourt avec le jus de citron, saler et poivrer.",
+      "Réchauffer les tortillas 30 secondes à la poêle.",
+      "Tartiner chaque tortilla de sauce yaourt.",
+      "Garnir de salade, falafels, tomate et concombre.",
+      "Rouler serré et couper en deux.",
+    ],
+  } },
   { id: "tartines-avocat-oeuf", name: "Tartines avocat & œuf", description: "Pain grillé, avocat écrasé et œuf poché.", prepTime: 15, difficulty: "very_easy", tags: ["express", "leger"], ingredients: ["pain", "avocat", "œuf", "citron"], base: "veg", allergens: ["gluten", "eggs"], cost: "low", req: ["toaster"], alt: ["stovetop"], category: "wrap" },
   { id: "bagels-saumon", name: "Bagels saumon & fromage frais", description: "Bagels garnis de saumon fumé et fromage frais.", prepTime: 15, difficulty: "very_easy", tags: ["express", "chic"], ingredients: ["bagel", "saumon fumé", "fromage frais", "aneth"], base: "fish", allergens: ["fish", "gluten", "milk"], cost: "treat", req: ["toaster"], alt: ["stovetop"], category: "wrap" },
   { id: "croque-veggie", name: "Croque veggie tomate-mozza", description: "Croque fondant tomate et mozzarella.", prepTime: 15, difficulty: "very_easy", tags: ["veggie", "kids"], ingredients: ["pain de mie", "tomate", "mozzarella", "basilic"], kid: true, base: "veg", allergens: ["gluten", "milk"], req: ["croque"], alt: ["stovetop", "oven"], category: "wrap" },
@@ -213,4 +420,8 @@ export const MEAL_CATALOG: Meal[] = RAW.map(meal);
 
 export function getMealById(id: string): Meal | undefined {
   return MEAL_CATALOG.find((m) => m.id === id);
+}
+
+export function getMealByName(name: string): Meal | undefined {
+  return MEAL_CATALOG.find((m) => m.name === name);
 }

@@ -70,6 +70,23 @@ export interface DaySlotSelection {
   slot: MealSlot;
 }
 
+// Ingrédient structuré d'une recette
+export interface RecipeIngredient {
+  name: string;
+  quantity: number;
+  unit: string;
+  optional?: boolean;
+  scalable?: boolean; // default true — false pour "1 sachet de levure" etc.
+}
+
+// Recette associée à un plat
+export interface Recipe {
+  servings: number;
+  ingredients: RecipeIngredient[];
+  steps: string[];
+  notes?: string;
+}
+
 // Repas du catalogue local
 export interface Meal {
   id: string;
@@ -87,6 +104,7 @@ export interface Meal {
   alternativeEquipment: Equipment[];
   reuseIngredients: string[]; // ingrédients "signature" mutualisables
   category: string; // ex: "pasta", "chicken", "soup"
+  recipe?: Recipe;
 }
 
 // Profil saisi pendant l'onboarding

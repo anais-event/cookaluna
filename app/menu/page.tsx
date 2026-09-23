@@ -11,6 +11,7 @@ import { WeeklyMenu } from "@/components/WeeklyMenu";
 import { MenuToolbar } from "@/components/MenuToolbar";
 import { PrintPreview } from "@/components/PrintPreview";
 import { PrintableMenu } from "@/components/PrintableMenu";
+import { FavoritesList } from "@/components/FavoritesList";
 import { Sparkle } from "@/components/Sparkle";
 
 export default function MenuPage() {
@@ -102,6 +103,9 @@ export default function MenuPage() {
         <div className="mt-10">
           <WeeklyMenu />
         </div>
+
+        {/* Recettes gardées */}
+        <FavoritesList />
 
         {/* Aperçu impression */}
         <section className="mt-16">
