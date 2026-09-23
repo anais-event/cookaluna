@@ -39,6 +39,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/favicon.svg",
+    apple: "/icon-192.png",
   },
 };
 
