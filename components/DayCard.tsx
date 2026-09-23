@@ -43,7 +43,7 @@ export function DayCard({ day, slots }: { day: DayKey; slots: MealSlot[] }) {
 
   return (
     <div className="card overflow-hidden">
-      <div className="stripes-soft border-b-[3px] border-ink px-4 py-2">
+      <div className="stripes-soft border-b-[3px] border-ink px-5 py-3">
         <h3 className="font-display text-lg font-extrabold uppercase tracking-wide">
           {DAY_LABELS[day]}
         </h3>
@@ -54,7 +54,7 @@ export function DayCard({ day, slots }: { day: DayKey; slots: MealSlot[] }) {
           const isEmpty = !meal || !meal.name;
           const editing = edit?.slot === slot;
           return (
-            <div key={slot} className="p-4">
+            <div key={slot} className="p-5">
               <p className="font-display mb-2 text-xs font-bold uppercase tracking-widest text-coral">
                 {SLOT_LABELS[slot]}
               </p>

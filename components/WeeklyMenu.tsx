@@ -29,7 +29,7 @@ export function WeeklyMenu() {
           ingrédients cette semaine.
         </p>
       )}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
         {days.map((day) => (
           <DayCard key={day} day={day} slots={slotOrder(byDay.get(day)!)} />
         ))}

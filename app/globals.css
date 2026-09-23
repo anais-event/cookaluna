@@ -214,7 +214,7 @@ h3,
 @media print {
   @page {
     size: A4 portrait;
-    margin: 12mm;
+    margin: 14mm;
   }
   html,
   body {
@@ -227,7 +227,39 @@ h3,
   .print-only {
     display: block !important;
   }
+
+  /* Forcer le rendu des aplats corail/noir à l'impression couleur. */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* La feuille occupe toute la largeur utile de la page. */
+  .menu-sheet {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  /* Tailles confortables en points pour l'impression domestique. */
+  .menu-sheet .sheet-header h1 {
+    font-size: 30pt;
+  }
+  .menu-sheet .sheet-dayname {
+    font-size: 14pt;
+  }
+  .menu-sheet .sheet-day {
+    padding-top: 10pt;
+    padding-bottom: 10pt;
+    /* Ne jamais couper un jour entre deux pages. */
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .menu-sheet .sheet-day span {
+    font-size: 11.5pt;
+  }
 }
+
+/* Si l'utilisateur imprime en noir et blanc, la structure reste lisible :
+   les libellés de jour ont un soulignement noir et les cellules des bordures. */
 .print-only {
   display: none;
 }

@@ -11,9 +11,9 @@ export function MenuSheet({ menu }: { menu: WeeklyMenuData }) {
   const days = weekDayOrder().filter((d) => byDay.has(d));
 
   return (
-    <div className="mx-auto w-full bg-paper" style={{ maxWidth: "210mm" }}>
+    <div className="menu-sheet mx-auto w-full bg-paper" style={{ maxWidth: "210mm" }}>
       {/* En-tête */}
-      <div className="bg-coral px-6 py-5 text-white">
+      <div className="sheet-header bg-coral px-6 py-5 text-white">
         <p className="font-display text-xs font-bold uppercase tracking-[0.2em]">
           On mange quoi cette semaine ?
         </p>
@@ -33,20 +33,20 @@ export function MenuSheet({ menu }: { menu: WeeklyMenuData }) {
           return (
             <div
               key={day}
-              className="border-b-2 border-ink/15 px-6 py-3"
+              className="sheet-day border-b-2 border-ink/15 px-6 py-3"
               style={{
                 borderRight: idx % 2 === 0 ? "2px solid rgba(17,17,17,0.15)" : undefined,
               }}
             >
-              <p className="font-display text-lg font-extrabold uppercase tracking-wide text-coral">
+              <p className="sheet-dayname font-display inline-block border-b-2 border-ink pb-0.5 text-lg font-extrabold uppercase tracking-wide text-coral">
                 {DAY_LABELS[day]}
               </p>
-              <div className="mt-1 space-y-1">
+              <div className="mt-1.5 space-y-1.5">
                 {(["lunch", "dinner"] as MealSlot[])
                   .filter((s) => slots.has(s))
                   .map((s) => (
                     <div key={s} className="flex gap-2 text-sm">
-                      <span className="font-display w-12 shrink-0 font-bold text-ink/60">
+                      <span className="font-display w-12 shrink-0 font-bold text-ink/70">
                         {SLOT_LABELS[s]}
                       </span>
                       <span className="font-medium">
