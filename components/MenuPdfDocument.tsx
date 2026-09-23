@@ -133,11 +133,18 @@ const s = StyleSheet.create({
   },
   cardBody: {
     paddingHorizontal: 9,
-    paddingVertical: 8,
+    paddingVertical: 9,
     flex: 1,
-    justifyContent: "space-around",
+    justifyContent: "center",
+    gap: 10,
   },
   meal: {},
+  emptyDay: {
+    fontSize: 8.5,
+    fontStyle: "italic",
+    color: SHEET_TOKENS.mutedInk,
+    textAlign: "center",
+  },
   slotRow: { flexDirection: "row", alignItems: "center", gap: 4 },
   slotLabel: {
     color: CORAL,
@@ -299,8 +306,9 @@ function truncate(str: string, max: number) {
 }
 
 function DayCard({ day, slots }: { day: DayKey; slots?: Map<MealSlot, MenuMeal> }) {
-  const lunch = slots?.get("lunch");
-  const dinner = slots?.get("dinner");
+  const activeSlots = (["lunch", "dinner"] as MealSlot[]).filter((sl) =>
+    slots?.get(sl)?.name?.trim(),
+  );
   return (
     <View style={s.card}>
       <View style={s.cardHead}>
@@ -308,25 +316,29 @@ function DayCard({ day, slots }: { day: DayKey; slots?: Map<MealSlot, MenuMeal> 
         <Sparkle size={8} color={CORAL} />
       </View>
       <View style={s.cardBody}>
-        {(["lunch", "dinner"] as MealSlot[]).map((sl) => {
-          const meal = sl === "lunch" ? lunch : dinner;
-          return (
-            <View key={sl} style={s.meal}>
-              <View style={s.slotRow}>
-                <SlotIcon slot={sl} />
-                <Text style={s.slotLabel}>{SLOT_LABELS[sl]}</Text>
+        {activeSlots.length === 0 ? (
+          <Text style={s.emptyDay}>Journee libre</Text>
+        ) : (
+          activeSlots.map((sl) => {
+            const meal = slots!.get(sl)!;
+            return (
+              <View key={sl} style={s.meal}>
+                <View style={s.slotRow}>
+                  <SlotIcon slot={sl} />
+                  <Text style={s.slotLabel}>{SLOT_LABELS[sl]}</Text>
+                </View>
+                <Text style={s.mealName}>{truncate(meal.name, 90)}</Text>
+                {(meal.prepTime > 0 || meal.difficulty) && (
+                  <Text style={s.mealMeta}>
+                    {meal.prepTime > 0 ? `${meal.prepTime} min` : ""}
+                    {meal.prepTime > 0 && meal.difficulty ? " · " : ""}
+                    {meal.difficulty ? DIFFICULTY_LABELS[meal.difficulty] : ""}
+                  </Text>
+                )}
               </View>
-              <Text style={s.mealName}>{meal ? truncate(meal.name || "—", 90) : "—"}</Text>
-              {meal && (meal.prepTime > 0 || meal.difficulty) && (
-                <Text style={s.mealMeta}>
-                  {meal.prepTime > 0 ? `${meal.prepTime} min` : ""}
-                  {meal.prepTime > 0 && meal.difficulty ? " · " : ""}
-                  {meal.difficulty ? DIFFICULTY_LABELS[meal.difficulty] : ""}
-                </Text>
-              )}
-            </View>
-          );
-        })}
+            );
+          })
+        )}
       </View>
     </View>
   );
@@ -337,11 +349,11 @@ function NotesCard({ reused }: { reused: string[] }) {
     <View style={s.notesCard}>
       <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
         <Sparkle size={9} color={CORAL} />
-        <Text style={s.notesTitle}>Pense-bete du frigo</Text>
+        <Text style={s.notesTitle}>Pense-bête du frigo</Text>
       </View>
       {reused.length > 0 ? (
         <>
-          <Text style={s.notesSubtitle}>Ingredients qui reviennent cette semaine</Text>
+          <Text style={s.notesSubtitle}>Ingrédients qui reviennent cette semaine</Text>
           <View style={s.reuseRow}>
             {reused.map((item) => (
               <Text key={item} style={s.reuseItem}>
@@ -349,10 +361,10 @@ function NotesCard({ reused }: { reused: string[] }) {
               </Text>
             ))}
           </View>
-          <Text style={s.notesSubtitle}>A racheter ou noter ci-dessous :</Text>
+          <Text style={s.notesSubtitle}>À racheter ou noter ci-dessous :</Text>
         </>
       ) : (
-        <Text style={s.notesSubtitle}>Courses, envies, restes a finir...</Text>
+        <Text style={s.notesSubtitle}>Courses, envies, restes à finir…</Text>
       )}
       <View style={s.notesLines}>
         {Array.from({ length: 4 }).map((_, i) => (
@@ -364,10 +376,10 @@ function NotesCard({ reused }: { reused: string[] }) {
 }
 
 const DECOR_QUOTES = [
-  { text: "La vie est un repas partage.", author: "Proverbe" },
+  { text: "La vie est un repas partagé.", author: "Proverbe" },
   { text: "Le bonheur, c'est du temps, pas de la vaisselle.", author: "Cookaluna" },
-  { text: "Moins de charge mentale, plus de place a table.", author: "Cookaluna" },
-  { text: "Un bon repas efface une mauvaise journee.", author: "Proverbe" },
+  { text: "Moins de charge mentale, plus de place à table.", author: "Cookaluna" },
+  { text: "Un bon repas efface une mauvaise journée.", author: "Proverbe" },
 ];
 
 function pickQuote(seed: string) {
@@ -460,7 +472,7 @@ export function MenuPdfDocument({ menu }: { menu: WeeklyMenuData }) {
             <Text style={s.footerText}>COOKALUNA</Text>
           </View>
           <Text style={s.footerText}>La semaine est servie.</Text>
-          <Text style={s.footerText}>A afficher sur le frigo.</Text>
+          <Text style={s.footerText}>À afficher sur le frigo.</Text>
         </View>
       </Page>
     </Document>
