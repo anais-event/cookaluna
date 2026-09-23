@@ -19,6 +19,7 @@ import {
   SHEET_TOKENS,
   groupMealsByDay,
   menuBonusSeed,
+  stripWeekPrefix,
   type SlotsByDay,
 } from "@/lib/menuSheet";
 import { getFridgeBonus, type BonusContent } from "@/lib/fridgeBonus";
@@ -592,7 +593,7 @@ export function MenuPdfDocument({
             </View>
             <View>
               <Text style={s.weekKicker}>Semaine du</Text>
-              <Text style={s.weekLabel}>{menu.weekLabel}</Text>
+              <Text style={s.weekLabel}>{stripWeekPrefix(menu.weekLabel)}</Text>
             </View>
           </View>
           <Text style={s.tagline}>On mange quoi cette semaine ?</Text>

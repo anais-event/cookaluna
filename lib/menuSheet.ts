@@ -12,6 +12,14 @@ export function menuBonusSeed(menu: WeeklyMenuData): string {
   return `${menu.weekLabel}::${sig}`;
 }
 
+// Le weekLabel est genere sous la forme "Semaine du 23 septembre". Dans
+// les feuilles imprimables il y a deja un kicker "SEMAINE DU" au-dessus,
+// on retire donc le prefixe pour n'afficher que la date -> pas de
+// doublon "SEMAINE DU / Semaine du 23 septembre".
+export function stripWeekPrefix(label: string): string {
+  return label.replace(/^\s*semaine\s+du\s+/i, "").trim();
+}
+
 // Ordre fixe lundi -> dimanche pour la feuille imprimable.
 // Independant de la date du jour : le document doit rester identique quelle
 // que soit la journee ou l'utilisateur genere son PDF.

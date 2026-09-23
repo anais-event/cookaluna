@@ -11,6 +11,7 @@ import {
   SHEET_DAY_ORDER,
   groupMealsByDay,
   menuBonusSeed,
+  stripWeekPrefix,
   type SlotsByDay,
 } from "@/lib/menuSheet";
 import { getFridgeBonus, type BonusContent } from "@/lib/fridgeBonus";
@@ -234,7 +235,9 @@ export function MenuSheet({
             <p className="font-display text-[10px] font-bold uppercase tracking-[0.25em] text-white/85">
               Semaine du
             </p>
-            <p className="font-display text-base font-extrabold">{menu.weekLabel}</p>
+            <p className="font-display text-base font-extrabold">
+              {stripWeekPrefix(menu.weekLabel)}
+            </p>
           </div>
         </div>
         <p className="sheet-tagline mt-3 max-w-[80%] font-display text-[28px] font-extrabold leading-[1.08]">
