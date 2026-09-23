@@ -15,12 +15,27 @@ export function Footer() {
           <p className="font-display text-sm font-bold text-coral">
             La semaine est servie.
           </p>
-          <nav className="flex gap-5 text-sm" aria-label="Liens de pied de page">
+          <nav
+            className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm"
+            aria-label="Liens de pied de page"
+          >
+            <Link href="/menu-semaine" className="hover:text-coral">
+              Menu de la semaine
+            </Link>
+            <Link href="/menu-semaine-a-imprimer" className="hover:text-coral">
+              À imprimer
+            </Link>
+            <Link href="/menu-semaine-famille" className="hover:text-coral">
+              En famille
+            </Link>
+            <Link href="/menu-semaine-sans-four" className="hover:text-coral">
+              Sans four
+            </Link>
+            <Link href="/idees-repas-semaine" className="hover:text-coral">
+              Idées repas
+            </Link>
             <Link href="/about" className="hover:text-coral">
               Comment ça marche
-            </Link>
-            <Link href="/create" className="hover:text-coral">
-              Créer mon menu
             </Link>
           </nav>
         </div>

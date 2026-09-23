@@ -1,16 +1,17 @@
-import type { Metadata } from "next";
 import Link from "next/link";
+import { pageMeta } from "@/lib/seo";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { StripePattern } from "@/components/StripePattern";
 import { Sparkle } from "@/components/Sparkle";
 import { ALLERGY_DISCLAIMER } from "@/lib/constants";
 
-export const metadata: Metadata = {
-  title: "Comment ça marche | Cookaluna",
+export const metadata = pageMeta({
+  title: "Comment fonctionne Cookaluna ? | Votre menu de la semaine",
   description:
-    "Cookaluna crée votre menu de la semaine en quelques minutes, l'ajuste facilement et l'imprime pour le frigo.",
-};
+    "Découvrez comment Cookaluna vous aide à créer, modifier et imprimer votre menu de la semaine en quelques minutes.",
+  path: "/about",
+});
 
 const STEPS: [string, string, string][] = [
   ["01", "Vous nous dites ce qui vous convient", "Le foyer, les allergies, vos envies, votre temps, votre budget et votre cuisine. Cinq écrans, deux minutes."],

@@ -16,16 +16,16 @@ export function Header() {
 
         <nav className="hidden items-center gap-6 sm:flex" aria-label="Navigation principale">
           <Link
+            href="/menu-semaine"
+            className="font-display text-base font-bold hover:text-coral"
+          >
+            Menu de la semaine
+          </Link>
+          <Link
             href="/about"
             className="font-display text-base font-bold hover:text-coral"
           >
             Comment ça marche
-          </Link>
-          <Link
-            href="/menu"
-            className="font-display text-base font-bold hover:text-coral"
-          >
-            Exemples
           </Link>
         </nav>
 

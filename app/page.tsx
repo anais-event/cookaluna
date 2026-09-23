@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { pageMeta } from "@/lib/seo";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { MenuPoster } from "@/components/MenuPoster";
@@ -11,6 +12,13 @@ const STEPS: [string, string, string][] = [
   ["02", "COOKALUNA vous propose votre semaine.", "Un menu cohérent, adapté à vous."],
   ["03", "Vous imprimez. C'est tout.", "Une feuille prête pour le frigo."],
 ];
+
+export const metadata = pageMeta({
+  title: "Cookaluna | Votre menu de la semaine prêt pour le frigo",
+  description:
+    "Créez votre menu de la semaine selon votre famille, vos envies, votre temps et votre cuisine. Modifiez-le puis imprimez-le pour le frigo.",
+  path: "/",
+});
 
 export default function LandingPage() {
   return (
@@ -54,6 +62,20 @@ export default function LandingPage() {
             </div>
           </div>
           <StripePattern height={16} />
+        </section>
+
+        {/* INTRO SEO — courte, sans écraser le produit */}
+        <section className="mx-auto max-w-3xl px-4 pt-14 sm:px-6">
+          <h2 className="font-display text-3xl font-extrabold">
+            Votre menu de la semaine, sans le casse-tête
+          </h2>
+          <p className="mt-3 text-lg leading-relaxed text-ink/80">
+            Marre de vous demander quoi manger chaque soir ? Cookaluna vous aide à
+            préparer votre <Link href="/menu-semaine" className="font-bold text-coral underline">menu de la semaine</Link>{" "}
+            en quelques minutes : indiquez qui mange, vos préférences, votre temps et
+            les équipements de votre cuisine. Vous obtenez une semaine de repas à
+            modifier, compléter et imprimer.
+          </p>
         </section>
 
         {/* CA MARCHE COMME CA */}
