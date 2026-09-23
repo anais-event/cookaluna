@@ -210,24 +210,48 @@ h3,
   outline-offset: 2px;
 }
 
+/* ------- Feuille imprimable : dimensions physiques A4 ------- */
+.menu-sheet {
+  width: 210mm;
+  height: 297mm;
+  overflow: hidden;
+}
+
+/* Cadre d'aperçu : garde le ratio A4 et met la feuille à l'échelle
+   pour s'adapter à la largeur disponible sans jamais déborder. */
+.menu-sheet-preview {
+  width: 100%;
+  max-width: 794px; /* 210 mm à 96 dpi */
+  aspect-ratio: 210 / 297;
+  container-type: size;
+  overflow: hidden;
+  background: #fff;
+}
+.menu-sheet-preview-inner {
+  transform-origin: top left;
+  transform: scale(calc(100cqw / 210mm));
+  width: 210mm;
+  height: 297mm;
+}
+
 /* ------- Impression ------- */
 @media print {
   @page {
     size: A4 portrait;
-    margin: 10mm;
+    margin: 0;
   }
   html,
   body {
     background: #fff !important;
     background-image: none !important;
-    height: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   .no-print {
     display: none !important;
   }
   .print-only {
     display: block !important;
-    height: 100%;
   }
 
   /* Forcer le rendu des aplats corail/noir à l'impression couleur. */
@@ -236,39 +260,37 @@ h3,
     print-color-adjust: exact !important;
   }
 
-  /* La feuille occupe toute la largeur et quasi toute la hauteur utile de la page. */
+  /* Dimensions strictes A4 : la feuille remplit exactement la page,
+     aucune coupure, aucun second feuillet. */
   .menu-sheet {
-    max-width: 100% !important;
-    width: 100% !important;
-    height: calc(297mm - 20mm);
+    width: 210mm !important;
+    height: 297mm !important;
+    max-width: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    overflow: hidden;
   }
 
-  /* Tailles confortables en points pour l'impression domestique. */
   .menu-sheet .sheet-header {
-    padding-top: 14pt;
-    padding-bottom: 16pt;
-  }
-  .menu-sheet .brand-name {
-    font-size: 20pt;
-  }
-  .menu-sheet .sheet-tagline {
-    font-size: 26pt;
+    flex: 0 0 48mm;
+    padding: 10mm 12mm 8mm !important;
   }
   .menu-sheet .sheet-grid {
-    flex: 1;
-    grid-template-rows: repeat(3, 1fr);
+    flex: 1 1 auto;
+    padding: 4mm 6mm !important;
+    gap: 3mm !important;
   }
-  .menu-sheet .sheet-day {
-    break-inside: avoid;
-    page-break-inside: avoid;
+  .menu-sheet .sheet-footer {
+    flex: 0 0 12mm;
   }
-  .menu-sheet .day-head span {
-    font-size: 13.5pt;
-  }
-  .menu-sheet .day-body p {
-    font-size: 10.5pt;
-  }
-  .menu-sheet .tips-card {
+
+  .menu-sheet .sheet-day,
+  .menu-sheet .notes-card,
+  .menu-sheet .decor-card {
     break-inside: avoid;
     page-break-inside: avoid;
   }

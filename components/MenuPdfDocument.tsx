@@ -7,42 +7,54 @@ import {
   Text,
   View,
 } from "@react-pdf/renderer";
+import { DAY_LABELS, DIFFICULTY_LABELS, SLOT_LABELS } from "@/lib/constants";
 import {
-  DAY_LABELS,
-  DIFFICULTY_LABELS,
-  SLOT_LABELS,
-  weekDayOrder,
-} from "@/lib/constants";
+  SHEET_CELLS,
+  SHEET_TOKENS,
+  groupMealsByDay,
+  reusedIngredients,
+  type SlotsByDay,
+} from "@/lib/menuSheet";
 import type { DayKey, MealSlot, MenuMeal, WeeklyMenuData } from "@/lib/types";
 
-const CORAL = "#FF6B5F";
-const CORAL_LIGHT = "#FFE3DE";
-const INK = "#111111";
-const PAPER = "#FFFDF8";
-const WHITE = "#FFFFFF";
+const { coral: CORAL, coralLight: CORAL_LIGHT, ink: INK, paper: PAPER, white: WHITE } =
+  SHEET_TOKENS;
 
-// Polices standard intégrées à @react-pdf/renderer : pas de dépendance réseau
-// au moment de la génération (Bricolage Grotesque / DM Sans restent réservées au web).
+// Dimensions A4 en points PDF (72 pt / pouce).
+// 210 mm x 297 mm = 595.28 x 841.89 pt.
+// Le document est concu pour tenir sur UNE seule page, sans marge sortante,
+// avec des hauteurs fixes qui somment strictement a la hauteur A4.
+const A4_W = 595.28;
+const A4_H = 841.89;
+const HEADER_H = 138;
+const STRIPES_H = 6;
+const FOOTER_H = 30;
+const GRID_H = A4_H - HEADER_H - STRIPES_H * 2 - FOOTER_H; // ~ 661.89 pt
+
+const GRID_PAD = 14;
+const CELL_GAP = 8;
 
 const s = StyleSheet.create({
   page: {
     backgroundColor: PAPER,
-    fontSize: 10.5,
     fontFamily: "Helvetica",
     color: INK,
+    fontSize: 10,
   },
   header: {
+    height: HEADER_H,
     backgroundColor: CORAL,
-    paddingHorizontal: 26,
+    paddingHorizontal: 28,
     paddingTop: 22,
-    paddingBottom: 20,
+    paddingBottom: 18,
+    justifyContent: "space-between",
   },
   brandRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
   },
-  brandGroup: { flexDirection: "row", alignItems: "center", gap: 6 },
+  brandGroup: { flexDirection: "row", alignItems: "center", gap: 8 },
   brand: {
     color: WHITE,
     fontFamily: "Helvetica",
@@ -71,26 +83,31 @@ const s = StyleSheet.create({
     color: WHITE,
     fontFamily: "Helvetica",
     fontWeight: "bold",
-    fontSize: 25,
+    fontSize: 26,
     lineHeight: 1.1,
-    marginTop: 14,
     maxWidth: "78%",
   },
-  stripes: { flexDirection: "row", height: 8, overflow: "hidden" },
-  stripe: { width: 8, height: 8 },
+  stripes: { flexDirection: "row", height: STRIPES_H, overflow: "hidden" },
+  stripe: { flex: 1, height: STRIPES_H },
   grid: {
+    height: GRID_H,
+    padding: GRID_PAD,
+    flexDirection: "column",
+  },
+  row: {
     flex: 1,
     flexDirection: "row",
-    flexWrap: "wrap",
-    paddingHorizontal: 16,
-    paddingTop: 14,
-    paddingBottom: 4,
+    marginBottom: CELL_GAP,
   },
-  cellWrap: { width: "33.333%", padding: 5 },
-  cellWrapWide: { width: "66.666%", padding: 5 },
+  rowLast: { marginBottom: 0 },
+  cell: {
+    flex: 1,
+    marginRight: CELL_GAP,
+  },
+  cellLast: { marginRight: 0 },
   card: {
     flex: 1,
-    borderWidth: 1.5,
+    borderWidth: 1.4,
     borderColor: INK,
     borderRadius: 10,
     backgroundColor: WHITE,
@@ -99,10 +116,12 @@ const s = StyleSheet.create({
   cardHead: {
     backgroundColor: CORAL_LIGHT,
     paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingVertical: 5,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    borderBottomWidth: 1,
+    borderBottomColor: INK,
   },
   dayName: {
     color: INK,
@@ -110,16 +129,16 @@ const s = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 11.5,
     textTransform: "uppercase",
-    letterSpacing: 0.3,
+    letterSpacing: 0.4,
   },
   cardBody: {
-    paddingHorizontal: 10,
-    paddingVertical: 9,
+    paddingHorizontal: 9,
+    paddingVertical: 8,
     flex: 1,
-    justifyContent: "center",
-    gap: 8,
+    justifyContent: "space-around",
   },
-  slotLabelRow: { flexDirection: "row", alignItems: "center", gap: 3 },
+  meal: {},
+  slotRow: { flexDirection: "row", alignItems: "center", gap: 4 },
   slotLabel: {
     color: CORAL,
     fontFamily: "Helvetica",
@@ -131,23 +150,25 @@ const s = StyleSheet.create({
   mealName: {
     fontFamily: "Helvetica",
     fontWeight: "bold",
-    fontSize: 9.5,
-    lineHeight: 1.25,
+    fontSize: 9,
+    lineHeight: 1.22,
     marginTop: 2,
   },
-  mealMeta: { fontSize: 8, color: "rgba(17,17,17,0.55)", marginTop: 1 },
-  tipsCard: {
+  mealMeta: {
+    fontSize: 7.5,
+    color: SHEET_TOKENS.mutedInk,
+    marginTop: 2,
+  },
+  notesCard: {
     flex: 1,
-    borderWidth: 1.5,
+    borderWidth: 1.4,
     borderStyle: "dashed",
     borderColor: CORAL,
     borderRadius: 10,
     backgroundColor: CORAL_LIGHT,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    justifyContent: "center",
+    padding: 10,
   },
-  tipsTitle: {
+  notesTitle: {
     color: CORAL,
     fontFamily: "Helvetica",
     fontWeight: "bold",
@@ -155,22 +176,70 @@ const s = StyleSheet.create({
     letterSpacing: 1,
     textTransform: "uppercase",
   },
-  tipsRow: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 6 },
-  tipsItem: { fontFamily: "Helvetica", fontWeight: "bold", fontSize: 9.5 },
-  tipsNote: { marginTop: 6, fontSize: 8, color: "rgba(17,17,17,0.6)" },
-  quote: {
+  notesSubtitle: {
+    marginTop: 4,
+    fontSize: 8,
+    color: SHEET_TOKENS.mutedInk,
+    fontStyle: "italic",
+  },
+  notesLines: {
+    marginTop: 8,
+    flex: 1,
+    justifyContent: "space-between",
+    paddingBottom: 4,
+  },
+  notesLine: {
+    borderBottomWidth: 0.8,
+    borderBottomColor: "rgba(255,107,95,0.55)",
+    borderBottomStyle: "solid",
+    height: 14,
+  },
+  reuseRow: {
+    marginTop: 6,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  reuseItem: {
+    fontFamily: "Helvetica",
+    fontWeight: "bold",
+    fontSize: 8.5,
+  },
+  decorCard: {
+    flex: 1,
+    borderWidth: 1.4,
+    borderColor: INK,
+    borderRadius: 10,
+    backgroundColor: PAPER,
+    padding: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  decorTitle: {
+    fontFamily: "Helvetica",
+    fontWeight: "bold",
+    fontSize: 9,
+    color: CORAL,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  decorQuote: {
     fontFamily: "Helvetica",
     fontStyle: "italic",
-    fontWeight: "bold",
-    fontSize: 9.5,
-    marginTop: 6,
+    fontSize: 10,
+    marginTop: 8,
+    textAlign: "center",
     lineHeight: 1.3,
   },
-  quoteAuthor: { marginTop: 4, fontSize: 8, color: "rgba(17,17,17,0.6)" },
+  decorAuthor: {
+    fontSize: 8,
+    color: SHEET_TOKENS.mutedInk,
+    marginTop: 6,
+  },
   footer: {
+    height: FOOTER_H,
     backgroundColor: INK,
-    paddingVertical: 9,
-    paddingHorizontal: 22,
+    paddingHorizontal: 24,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -180,7 +249,7 @@ const s = StyleSheet.create({
     fontFamily: "Helvetica",
     fontWeight: "bold",
     fontSize: 8,
-    letterSpacing: 0.3,
+    letterSpacing: 0.5,
   },
 });
 
@@ -212,7 +281,7 @@ function SlotIcon({ slot }: { slot: MealSlot }) {
 }
 
 function Stripes({ light = false }: { light?: boolean }) {
-  const cells = Array.from({ length: 90 });
+  const cells = Array.from({ length: 60 });
   const a = light ? CORAL_LIGHT : CORAL;
   const b = light ? PAPER : WHITE;
   return (
@@ -224,83 +293,131 @@ function Stripes({ light = false }: { light?: boolean }) {
   );
 }
 
-const FALLBACK_QUOTES = [
-  { text: "La vie est un repas partagé.", author: "Proverbe" },
-  { text: "Le bonheur, c'est du temps, pas de la vaisselle.", author: "Cookaluna" },
-  { text: "Moins de charge mentale, plus de place à table.", author: "Cookaluna" },
-  { text: "Un bon repas efface une mauvaise journée.", author: "Proverbe" },
-];
-
-function pickFallbackQuote(seed: string) {
-  let h = 0;
-  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
-  return FALLBACK_QUOTES[h % FALLBACK_QUOTES.length];
+function truncate(str: string, max: number) {
+  if (str.length <= max) return str;
+  return str.slice(0, max - 1).trimEnd() + "…";
 }
 
-function reusedIngredients(meals: MenuMeal[]): string[] {
-  const counts = new Map<string, number>();
-  for (const m of meals) {
-    for (const r of m.reuseIngredients) counts.set(r, (counts.get(r) || 0) + 1);
-  }
-  return [...counts.entries()]
-    .filter(([, n]) => n >= 2)
-    .map(([name]) => name)
-    .slice(0, 4);
-}
-
-function DayCard({ day, slots }: { day: DayKey; slots: Map<MealSlot, MenuMeal> }) {
+function DayCard({ day, slots }: { day: DayKey; slots?: Map<MealSlot, MenuMeal> }) {
+  const lunch = slots?.get("lunch");
+  const dinner = slots?.get("dinner");
   return (
     <View style={s.card}>
       <View style={s.cardHead}>
         <Text style={s.dayName}>{DAY_LABELS[day]}</Text>
-        <Sparkle size={9} color={CORAL} />
+        <Sparkle size={8} color={CORAL} />
       </View>
       <View style={s.cardBody}>
-        {(["lunch", "dinner"] as MealSlot[])
-          .filter((sl) => slots.has(sl))
-          .map((sl) => {
-            const meal = slots.get(sl)!;
-            return (
-              <View key={sl}>
-                <View style={s.slotLabelRow}>
-                  <SlotIcon slot={sl} />
-                  <Text style={s.slotLabel}>{SLOT_LABELS[sl]}</Text>
-                </View>
-                <Text style={s.mealName}>{meal.name || "—"}</Text>
-                {(meal.prepTime > 0 || meal.difficulty) && (
-                  <Text style={s.mealMeta}>
-                    {meal.prepTime > 0 ? `${meal.prepTime} min` : ""}
-                    {meal.prepTime > 0 && meal.difficulty ? " · " : ""}
-                    {meal.difficulty ? DIFFICULTY_LABELS[meal.difficulty] : ""}
-                  </Text>
-                )}
+        {(["lunch", "dinner"] as MealSlot[]).map((sl) => {
+          const meal = sl === "lunch" ? lunch : dinner;
+          return (
+            <View key={sl} style={s.meal}>
+              <View style={s.slotRow}>
+                <SlotIcon slot={sl} />
+                <Text style={s.slotLabel}>{SLOT_LABELS[sl]}</Text>
               </View>
-            );
-          })}
+              <Text style={s.mealName}>{meal ? truncate(meal.name || "—", 90) : "—"}</Text>
+              {meal && (meal.prepTime > 0 || meal.difficulty) && (
+                <Text style={s.mealMeta}>
+                  {meal.prepTime > 0 ? `${meal.prepTime} min` : ""}
+                  {meal.prepTime > 0 && meal.difficulty ? " · " : ""}
+                  {meal.difficulty ? DIFFICULTY_LABELS[meal.difficulty] : ""}
+                </Text>
+              )}
+            </View>
+          );
+        })}
       </View>
     </View>
   );
 }
 
+function NotesCard({ reused }: { reused: string[] }) {
+  return (
+    <View style={s.notesCard}>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+        <Sparkle size={9} color={CORAL} />
+        <Text style={s.notesTitle}>Pense-bete du frigo</Text>
+      </View>
+      {reused.length > 0 ? (
+        <>
+          <Text style={s.notesSubtitle}>Ingredients qui reviennent cette semaine</Text>
+          <View style={s.reuseRow}>
+            {reused.map((item) => (
+              <Text key={item} style={s.reuseItem}>
+                {"• " + item}
+              </Text>
+            ))}
+          </View>
+          <Text style={s.notesSubtitle}>A racheter ou noter ci-dessous :</Text>
+        </>
+      ) : (
+        <Text style={s.notesSubtitle}>Courses, envies, restes a finir...</Text>
+      )}
+      <View style={s.notesLines}>
+        {Array.from({ length: 4 }).map((_, i) => (
+          <View key={i} style={s.notesLine} />
+        ))}
+      </View>
+    </View>
+  );
+}
+
+const DECOR_QUOTES = [
+  { text: "La vie est un repas partage.", author: "Proverbe" },
+  { text: "Le bonheur, c'est du temps, pas de la vaisselle.", author: "Cookaluna" },
+  { text: "Moins de charge mentale, plus de place a table.", author: "Cookaluna" },
+  { text: "Un bon repas efface une mauvaise journee.", author: "Proverbe" },
+];
+
+function pickQuote(seed: string) {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  return DECOR_QUOTES[h % DECOR_QUOTES.length];
+}
+
+function DecorCard({ seed }: { seed: string }) {
+  const q = pickQuote(seed);
+  return (
+    <View style={s.decorCard}>
+      <Sparkle size={16} color={CORAL} />
+      <Text style={s.decorTitle}>{"« On respire »"}</Text>
+      <Text style={s.decorQuote}>{"« " + q.text + " »"}</Text>
+      <Text style={s.decorAuthor}>{"— " + q.author}</Text>
+    </View>
+  );
+}
+
+function GridCell({
+  cellIndex,
+  byDay,
+  reused,
+  seed,
+}: {
+  cellIndex: number;
+  byDay: SlotsByDay;
+  reused: string[];
+  seed: string;
+}) {
+  const cell = SHEET_CELLS[cellIndex];
+  if (cell.kind === "day")
+    return <DayCard day={cell.day} slots={byDay.get(cell.day)} />;
+  if (cell.kind === "notes") return <NotesCard reused={reused} />;
+  return <DecorCard seed={seed} />;
+}
+
 export function MenuPdfDocument({ menu }: { menu: WeeklyMenuData }) {
-  const byDay = new Map<DayKey, Map<MealSlot, MenuMeal>>();
-  for (const m of menu.meals) {
-    if (!byDay.has(m.day)) byDay.set(m.day, new Map());
-    byDay.get(m.day)!.set(m.slot, m);
-  }
-  const days = weekDayOrder().filter((d) => byDay.has(d));
-  const firstDays = days.slice(0, 6);
-  const lastDay = days[6];
-  const tips = reusedIngredients(menu.meals);
-  const quote = pickFallbackQuote(menu.weekLabel);
+  const byDay = groupMealsByDay(menu.meals);
+  const reused = reusedIngredients(menu.meals);
 
   return (
-    <Document title="Cookaluna — Menu de la semaine">
+    <Document title="Cookaluna - Menu de la semaine">
       <Page size="A4" style={s.page}>
+        {/* Header */}
         <View style={s.header}>
           <View style={s.brandRow}>
             <View style={s.brandGroup}>
-              <Sparkle size={16} color={WHITE} />
+              <Sparkle size={18} color={WHITE} />
               <Text style={s.brand}>COOKALUNA</Text>
             </View>
             <View>
@@ -310,60 +427,40 @@ export function MenuPdfDocument({ menu }: { menu: WeeklyMenuData }) {
           </View>
           <Text style={s.tagline}>On mange quoi cette semaine ?</Text>
         </View>
+
         <Stripes />
 
+        {/* Grille 3x3 fixe */}
         <View style={s.grid}>
-          {firstDays.map((day) => (
-            <View key={day} style={s.cellWrap}>
-              <DayCard day={day} slots={byDay.get(day)!} />
+          {[0, 1, 2].map((r) => (
+            <View key={r} style={[s.row, r === 2 ? s.rowLast : {}]}>
+              {[0, 1, 2].map((c) => {
+                const i = r * 3 + c;
+                return (
+                  <View key={c} style={[s.cell, c === 2 ? s.cellLast : {}]}>
+                    <GridCell
+                      cellIndex={i}
+                      byDay={byDay}
+                      reused={reused}
+                      seed={menu.weekLabel}
+                    />
+                  </View>
+                );
+              })}
             </View>
           ))}
-
-          {lastDay && (
-            <View style={s.cellWrap}>
-              <DayCard day={lastDay} slots={byDay.get(lastDay)!} />
-            </View>
-          )}
-
-          <View style={s.cellWrapWide}>
-            <View style={s.tipsCard}>
-              {tips.length > 0 ? (
-                <>
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                    <Sparkle size={9} color={CORAL} />
-                    <Text style={s.tipsTitle}>On réutilise certains ingrédients</Text>
-                  </View>
-                  <View style={s.tipsRow}>
-                    {tips.map((item) => (
-                      <Text key={item} style={s.tipsItem}>• {item}</Text>
-                    ))}
-                  </View>
-                  <Text style={s.tipsNote}>
-                    Moins de courses, moins de gaspillage, plus de temps pour le reste.
-                  </Text>
-                </>
-              ) : (
-                <>
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                    <Sparkle size={9} color={CORAL} />
-                    <Text style={s.tipsTitle}>Petite pensée du frigo</Text>
-                  </View>
-                  <Text style={s.quote}>« {quote.text} »</Text>
-                  <Text style={s.quoteAuthor}>— {quote.author}</Text>
-                </>
-              )}
-            </View>
-          </View>
         </View>
 
         <Stripes light />
+
+        {/* Footer */}
         <View style={s.footer}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
             <Sparkle size={9} color={CORAL} />
             <Text style={s.footerText}>COOKALUNA</Text>
           </View>
           <Text style={s.footerText}>La semaine est servie.</Text>
-          <Text style={s.footerText}>À afficher sur le frigo.</Text>
+          <Text style={s.footerText}>A afficher sur le frigo.</Text>
         </View>
       </Page>
     </Document>

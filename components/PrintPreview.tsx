@@ -3,12 +3,17 @@
 import { MenuSheet } from "./MenuSheet";
 import type { WeeklyMenuData } from "@/lib/types";
 
-// Aperçu de la feuille à l'écran, encadré façon papier.
+// Aperçu de la feuille à l'écran, encadré façon papier au format A4 portrait.
+// La feuille a des dimensions physiques (mm) : le conteneur applique une mise
+// à l'échelle CSS pour l'afficher confortablement dans la page tout en
+// respectant strictement les proportions du PDF/impression.
 export function PrintPreview({ menu }: { menu: WeeklyMenuData }) {
   return (
     <div className="no-print">
-      <div className="mx-auto max-w-3xl overflow-hidden rounded-card border-[3px] border-ink shadow-pop">
-        <MenuSheet menu={menu} />
+      <div className="menu-sheet-preview mx-auto overflow-hidden rounded-card border-[3px] border-ink shadow-pop">
+        <div className="menu-sheet-preview-inner">
+          <MenuSheet menu={menu} />
+        </div>
       </div>
     </div>
   );
