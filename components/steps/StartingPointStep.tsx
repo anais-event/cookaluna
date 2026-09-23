@@ -6,10 +6,10 @@ import { OptionCard } from "../controls";
 import type { StartingMode } from "@/lib/types";
 
 const MODES: { value: StartingMode; title: string; desc: string }[] = [
-  { value: "none", title: "Aucune idée", desc: "Faites-moi toute la semaine." },
+  { value: "none", title: "Aucune idée", desc: "Faites-moi toute la semaine, sans thème particulier." },
   { value: "some_ideas", title: "Quelques inspis", desc: "J'ai 2 ou 3 envies, complétez le reste." },
   { value: "my_list", title: "Ma liste", desc: "J'ai déjà mes idées." },
-  { value: "surprise", title: "Surprenez-moi", desc: "Une semaine sympa selon mon profil." },
+  { value: "surprise", title: "Surprenez-moi", desc: "Un thème surprise (tour du monde, comfort food, léger...) pour toute la semaine." },
 ];
 
 export function StartingPointStep() {

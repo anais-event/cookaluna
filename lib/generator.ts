@@ -176,6 +176,32 @@ function matchIdeaToMeal(idea: string, pool: Meal[]): Meal | undefined {
   });
 }
 
+// ---------- Thème surprise ----------
+// Différencie réellement "surprise" de "none" : un thème réel qui oriente
+// le choix des plats (via les tags du catalogue), affiché à l'utilisateur.
+
+export interface SurpriseTheme {
+  id: string;
+  label: string;
+  tags: string[];
+}
+
+export const SURPRISE_THEMES: SurpriseTheme[] = [
+  { id: "monde", label: "Tour du monde", tags: ["monde", "asie", "italie", "mediterraneen"] },
+  { id: "confort", label: "Comfort food", tags: ["comfort", "mijote"] },
+  { id: "leger", label: "Version légère", tags: ["healthy", "leger", "veggie"] },
+  { id: "express", label: "Semaine express", tags: ["express", "rapide"] },
+];
+
+export function pickSurpriseTheme(): SurpriseTheme {
+  return SURPRISE_THEMES[Math.floor(Math.random() * SURPRISE_THEMES.length)];
+}
+
+function themeBonus(meal: Meal, theme: SurpriseTheme | undefined): number {
+  if (!theme) return 0;
+  return meal.tags.some((t) => theme.tags.includes(t)) ? 4 : 0;
+}
+
 export function buildWeekLabel(date = new Date()): string {
   const d = date.toLocaleDateString("fr-FR", {
     day: "numeric",
@@ -194,6 +220,7 @@ function sameProtein(a: Meal, b: Meal): boolean {
 // ---------- Génération démo (sans IA) ----------
 
 export function generateDemoMenu(p: MealProfile): WeeklyMenuData {
+  const theme = p.startingMode === "surprise" ? pickSurpriseTheme() : undefined;
   const eligible = MEAL_CATALOG.filter((m) => matchesProfile(m, p));
   const pool = eligible.length > 0 ? eligible : MEAL_CATALOG.slice();
 
@@ -242,7 +269,7 @@ export function generateDemoMenu(p: MealProfile): WeeklyMenuData {
 
   // 2) Remplir le reste avec scoring + diversification.
   const scored = pool
-    .map((m) => ({ m, s: scoreMeal(m, p) }))
+    .map((m) => ({ m, s: scoreMeal(m, p) + themeBonus(m, theme) }))
     .sort((a, b) => b.s - a.s);
 
   for (; slotIndex < slots.length; slotIndex++) {
@@ -257,7 +284,7 @@ export function generateDemoMenu(p: MealProfile): WeeklyMenuData {
     // Recalcul du bruit à chaque slot pour de la variété.
     const ranked = scored
       .map(({ m }) => {
-        let s = scoreMeal(m, p);
+        let s = scoreMeal(m, p) + themeBonus(m, theme);
         if (usedNames.has(m.name)) s -= 100; // éviter doublons
         if (prevMeal) {
           if (m.category === prevMeal.category) s -= 4;
@@ -290,6 +317,7 @@ export function generateDemoMenu(p: MealProfile): WeeklyMenuData {
     meals,
     source: "demo",
     reusedNote,
+    theme: theme?.label,
   };
 }
 

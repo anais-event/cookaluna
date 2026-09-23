@@ -42,8 +42,8 @@ export function DayCard({ day, slots }: { day: DayKey; slots: MealSlot[] }) {
   };
 
   return (
-    <div className="card overflow-hidden">
-      <div className="stripes-soft border-b-[3px] border-ink px-5 py-3">
+    <div className="card">
+      <div className="stripes-soft rounded-t-[15px] border-b-[3px] border-ink px-5 py-3">
         <h3 className="font-display text-lg font-extrabold uppercase tracking-wide">
           {DAY_LABELS[day]}
         </h3>

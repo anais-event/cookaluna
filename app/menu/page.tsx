@@ -44,6 +44,11 @@ export default function MenuPage() {
               Votre semaine est servie.
             </h1>
             <p className="mt-2 text-lg text-ink/70">Vous pouvez tout changer.</p>
+            {menu.theme && (
+              <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border-2 border-ink bg-coral-light px-3 py-1 text-sm font-bold">
+                <Sparkle size={13} color="var(--coral)" /> Thème surprise : {menu.theme}
+              </p>
+            )}
           </div>
           <Link href="/create" className="btn btn-ghost btn-sm">
             Recommencer

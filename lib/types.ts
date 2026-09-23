@@ -128,6 +128,7 @@ export interface WeeklyMenuData {
   meals: MenuMeal[];
   source: "demo" | "ai";
   reusedNote?: boolean;
+  theme?: string; // libellé du thème surprise, si startingMode === "surprise"
 }
 
 // Réponse structurée attendue de l'IA

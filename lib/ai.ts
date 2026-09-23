@@ -5,7 +5,7 @@ import {
   DIET_LABELS,
   EQUIPMENT_LABELS,
 } from "./constants";
-import { buildWeekLabel, detectReuse } from "./generator";
+import { buildWeekLabel, detectReuse, pickSurpriseTheme, type SurpriseTheme } from "./generator";
 import type {
   AiMenuResponse,
   DayKey,
@@ -96,7 +96,7 @@ const MENU_SCHEMA = {
   required: ["weekLabel", "meals"],
 } as const;
 
-function buildPrompt(p: MealProfile): string {
+function buildPrompt(p: MealProfile, theme?: SurpriseTheme): string {
   const diets = p.dietaryPreferences
     .filter((d) => d !== "none")
     .map((d) => DIET_LABELS[d]);
@@ -122,6 +122,9 @@ function buildPrompt(p: MealProfile): string {
     p.adaptWish
       ? `Demande précise de l'utilisateur à honorer autant que possible (interprète le jour et le repas visés) : "${p.adaptWish}".`
       : "",
+    theme
+      ? `Thème surprise à respecter pour la majorité des repas : "${theme.label}" (mots-clés : ${theme.tags.join(", ")}).`
+      : "",
   ]
     .filter(Boolean)
     .join("\n");
@@ -140,6 +143,7 @@ Règles impératives, par ordre de priorité :
 Ne donne jamais de conseil médical. N'affirme jamais qu'un plat est sans allergène garanti. Pas de prix précis. Reste simple, pas gastronomique. Ne renvoie que la structure JSON demandée, un objet par créneau exactement.`;
 
 export async function generateAiMenu(p: MealProfile): Promise<WeeklyMenuData> {
+  const theme = p.startingMode === "surprise" ? pickSurpriseTheme() : undefined;
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   const model = process.env.OPENAI_MODEL || "gpt-5";
 
@@ -147,7 +151,7 @@ export async function generateAiMenu(p: MealProfile): Promise<WeeklyMenuData> {
     model,
     messages: [
       { role: "system", content: SYSTEM },
-      { role: "user", content: buildPrompt(p) },
+      { role: "user", content: buildPrompt(p, theme) },
     ],
     response_format: {
       type: "json_schema",
@@ -181,5 +185,6 @@ export async function generateAiMenu(p: MealProfile): Promise<WeeklyMenuData> {
     meals,
     source: "ai",
     reusedNote: detectReuse(meals),
+    theme: theme?.label,
   };
 }
