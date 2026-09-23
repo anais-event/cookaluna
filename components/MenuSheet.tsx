@@ -1,13 +1,20 @@
 import { Moon, Sun } from "lucide-react";
 import { Sparkle } from "./Sparkle";
-import { DAY_LABELS, DIFFICULTY_LABELS, SLOT_LABELS } from "@/lib/constants";
+import {
+  DAY_ABBR,
+  DAY_LABELS,
+  DIFFICULTY_LABELS,
+  SLOT_LABELS,
+} from "@/lib/constants";
 import {
   SHEET_CELLS,
+  SHEET_DAY_ORDER,
   groupMealsByDay,
   menuBonusSeed,
   type SlotsByDay,
 } from "@/lib/menuSheet";
 import { getFridgeBonus, type BonusContent } from "@/lib/fridgeBonus";
+import type { SheetView } from "@/lib/store";
 import type { DayKey, MealSlot, MenuMeal, WeeklyMenuData } from "@/lib/types";
 
 function SlotIcon({ slot }: { slot: MealSlot }) {
@@ -172,15 +179,49 @@ function Cell({
   return <BonusCard bonus={getFridgeBonus(seed)} />;
 }
 
-// La feuille imprimable Cookaluna. Structure fixe 3x3, identique en ecran,
-// en impression navigateur et en PDF (@react-pdf/renderer). Aucune coupure :
-// tout tient sur une A4 portrait.
-export function MenuSheet({ menu }: { menu: WeeklyMenuData }) {
+function ListBody({ byDay }: { byDay: SlotsByDay }) {
+  return (
+    <ul className="sheet-list flex flex-1 flex-col divide-y-2 divide-ink/10 px-6 py-5">
+      {SHEET_DAY_ORDER.map((day) => {
+        const slots = byDay.get(day);
+        const meals = (["lunch", "dinner"] as MealSlot[])
+          .map((s) => slots?.get(s))
+          .filter((m): m is MenuMeal => !!m?.name?.trim());
+        return (
+          <li key={day} className="flex items-center gap-4 py-3">
+            <span className="font-display w-14 shrink-0 text-[15px] font-extrabold uppercase tracking-widest text-coral">
+              {DAY_ABBR[day]}
+            </span>
+            {meals.length === 0 ? (
+              <span className="text-[13px] italic text-ink/50">Journée libre</span>
+            ) : (
+              <span className="font-display text-[15px] font-bold leading-snug text-ink">
+                {meals.map((m) => m.name).join(" · ")}
+              </span>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+// La feuille imprimable Cookaluna. Deux vues :
+// - grid : structure 3x3 fixe (jours + FridgeBonus + pense-bete), pleine A4.
+// - list : liste compacte 7 lignes, meme identite visuelle.
+// Identique en ecran, en impression et en PDF (@react-pdf/renderer).
+export function MenuSheet({
+  menu,
+  view = "grid",
+}: {
+  menu: WeeklyMenuData;
+  view?: SheetView;
+}) {
   const byDay = groupMealsByDay(menu.meals);
   const bonusSeed = menuBonusSeed(menu);
 
   return (
-    <div className="menu-sheet flex flex-col bg-paper">
+    <div className="menu-sheet flex flex-col bg-paper" data-view={view}>
       <header className="sheet-header flex flex-col justify-between bg-coral px-7 pb-5 pt-5 text-white">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-2">
@@ -202,11 +243,15 @@ export function MenuSheet({ menu }: { menu: WeeklyMenuData }) {
       </header>
       <div className="stripes h-1.5" />
 
-      <div className="sheet-grid grid flex-1 grid-cols-3 grid-rows-3 gap-2 p-3">
-        {SHEET_CELLS.map((_, i) => (
-          <Cell key={i} cellIndex={i} byDay={byDay} seed={bonusSeed} />
-        ))}
-      </div>
+      {view === "list" ? (
+        <ListBody byDay={byDay} />
+      ) : (
+        <div className="sheet-grid grid flex-1 grid-cols-3 grid-rows-3 gap-2 p-3">
+          {SHEET_CELLS.map((_, i) => (
+            <Cell key={i} cellIndex={i} byDay={byDay} seed={bonusSeed} />
+          ))}
+        </div>
+      )}
 
       <div className="stripes h-1.5" />
       <footer className="sheet-footer flex items-center justify-between bg-ink px-6 py-2 text-paper">

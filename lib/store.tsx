@@ -21,10 +21,12 @@ import type {
 const STORAGE_KEY = "cookaluna:v1";
 
 export type ThemeName = "coral";
+export type SheetView = "grid" | "list";
 
 interface PersistShape {
   profile: MealProfile;
   menu: WeeklyMenuData | null;
+  sheetView?: SheetView;
 }
 
 interface StoreValue {
@@ -33,12 +35,14 @@ interface StoreValue {
   currentStep: number;
   isGenerating: boolean;
   selectedTheme: ThemeName;
+  sheetView: SheetView;
   hydrated: boolean;
   setProfile: (patch: Partial<MealProfile>) => void;
   replaceProfile: (p: MealProfile) => void;
   setMenu: (menu: WeeklyMenuData | null) => void;
   setStep: (n: number) => void;
   setGenerating: (b: boolean) => void;
+  setSheetView: (v: SheetView) => void;
   resetAll: () => void;
   updateMealAt: (day: DayKey, slot: MealSlot, patch: Partial<MenuMeal>) => void;
   replaceMealAt: (day: DayKey, slot: MealSlot, meal: MenuMeal) => void;
@@ -53,6 +57,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedTheme] = useState<ThemeName>("coral");
+  const [sheetView, setSheetViewState] = useState<SheetView>("grid");
   const [hydrated, setHydrated] = useState(false);
   const loaded = useRef(false);
 
@@ -64,6 +69,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         const parsed = JSON.parse(raw) as PersistShape;
         if (parsed.profile) setProfileState(parsed.profile);
         if (parsed.menu) setMenuState(parsed.menu);
+        if (parsed.sheetView === "grid" || parsed.sheetView === "list") {
+          setSheetViewState(parsed.sheetView);
+        }
       }
     } catch {
       /* ignore */
@@ -76,12 +84,12 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!loaded.current) return;
     try {
-      const data: PersistShape = { profile, menu };
+      const data: PersistShape = { profile, menu, sheetView };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch {
       /* ignore quota */
     }
-  }, [profile, menu]);
+  }, [profile, menu, sheetView]);
 
   const setProfile = useCallback((patch: Partial<MealProfile>) => {
     setProfileState((prev) => ({ ...prev, ...patch }));
@@ -91,6 +99,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const setMenu = useCallback((m: WeeklyMenuData | null) => setMenuState(m), []);
   const setStep = useCallback((n: number) => setCurrentStep(n), []);
   const setGenerating = useCallback((b: boolean) => setIsGenerating(b), []);
+  const setSheetView = useCallback((v: SheetView) => setSheetViewState(v), []);
 
   const resetAll = useCallback(() => {
     setProfileState(createDefaultProfile());
@@ -172,12 +181,14 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       currentStep,
       isGenerating,
       selectedTheme,
+      sheetView,
       hydrated,
       setProfile,
       replaceProfile,
       setMenu,
       setStep,
       setGenerating,
+      setSheetView,
       resetAll,
       updateMealAt,
       replaceMealAt,
@@ -189,12 +200,14 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       currentStep,
       isGenerating,
       selectedTheme,
+      sheetView,
       hydrated,
       setProfile,
       replaceProfile,
       setMenu,
       setStep,
       setGenerating,
+      setSheetView,
       resetAll,
       updateMealAt,
       replaceMealAt,

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, LayoutGrid, List } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { createSampleMenu } from "@/lib/sampleMenu";
 import { Header } from "@/components/Header";
@@ -14,7 +14,7 @@ import { PrintableMenu } from "@/components/PrintableMenu";
 import { Sparkle } from "@/components/Sparkle";
 
 export default function MenuPage() {
-  const { menu, hydrated, setMenu } = useStore();
+  const { menu, hydrated, setMenu, sheetView, setSheetView } = useStore();
 
   // Toujours montrer quelque chose : à défaut, un menu d'exemple.
   useEffect(() => {
@@ -73,20 +73,56 @@ export default function MenuPage() {
 
         {/* Aperçu impression */}
         <section className="mt-16">
-          <h2 className="font-display text-2xl font-extrabold">
-            Aperçu impression
-          </h2>
-          <p className="mt-1 text-ink/70">
-            Voilà à quoi ressemblera votre feuille, prête pour le frigo.
-          </p>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2 className="font-display text-2xl font-extrabold">
+                Aperçu impression
+              </h2>
+              <p className="mt-1 text-ink/70">
+                Voilà à quoi ressemblera votre feuille, prête pour le frigo.
+              </p>
+            </div>
+            <div
+              role="tablist"
+              aria-label="Mise en page de la feuille"
+              className="inline-flex rounded-xl border-[3px] border-ink bg-white p-1"
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={sheetView === "grid"}
+                onClick={() => setSheetView("grid")}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-bold transition ${
+                  sheetView === "grid"
+                    ? "bg-ink text-paper"
+                    : "text-ink/70 hover:text-ink"
+                }`}
+              >
+                <LayoutGrid size={14} aria-hidden="true" /> Grille
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={sheetView === "list"}
+                onClick={() => setSheetView("list")}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-bold transition ${
+                  sheetView === "list"
+                    ? "bg-ink text-paper"
+                    : "text-ink/70 hover:text-ink"
+                }`}
+              >
+                <List size={14} aria-hidden="true" /> Liste
+              </button>
+            </div>
+          </div>
           <div className="mt-6">
-            <PrintPreview menu={menu} />
+            <PrintPreview menu={menu} view={sheetView} />
           </div>
         </section>
       </main>
 
       {/* Version imprimable pure (masquée à l'écran) */}
-      <PrintableMenu menu={menu} />
+      <PrintableMenu menu={menu} view={sheetView} />
 
       <Footer />
     </>

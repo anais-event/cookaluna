@@ -9,7 +9,7 @@ import { PdfDownloadButton } from "./PdfDownloadButton";
 import type { WeeklyMenuData } from "@/lib/types";
 
 export function MenuToolbar({ menu }: { menu: WeeklyMenuData }) {
-  const { profile, setMenu } = useStore();
+  const { profile, setMenu, sheetView } = useStore();
   const [busy, setBusy] = useState(false);
 
   const print = () => {
@@ -55,7 +55,7 @@ export function MenuToolbar({ menu }: { menu: WeeklyMenuData }) {
       <button type="button" onClick={print} className="btn btn-coral btn-sm">
         <Printer size={16} aria-hidden="true" /> Imprimer
       </button>
-      <PdfDownloadButton menu={menu} />
+      <PdfDownloadButton menu={menu} view={sheetView} />
     </div>
   );
 }

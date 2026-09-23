@@ -7,15 +7,22 @@ import {
   Text,
   View,
 } from "@react-pdf/renderer";
-import { DAY_LABELS, DIFFICULTY_LABELS, SLOT_LABELS } from "@/lib/constants";
+import {
+  DAY_ABBR,
+  DAY_LABELS,
+  DIFFICULTY_LABELS,
+  SLOT_LABELS,
+} from "@/lib/constants";
 import {
   SHEET_CELLS,
+  SHEET_DAY_ORDER,
   SHEET_TOKENS,
   groupMealsByDay,
   menuBonusSeed,
   type SlotsByDay,
 } from "@/lib/menuSheet";
 import { getFridgeBonus, type BonusContent } from "@/lib/fridgeBonus";
+import type { SheetView } from "@/lib/store";
 import type { DayKey, MealSlot, MenuMeal, WeeklyMenuData } from "@/lib/types";
 
 const { coral: CORAL, coralLight: CORAL_LIGHT, ink: INK, paper: PAPER, white: WHITE } =
@@ -94,6 +101,45 @@ const s = StyleSheet.create({
     height: GRID_H,
     padding: GRID_PAD,
     flexDirection: "column",
+  },
+  list: {
+    height: GRID_H,
+    paddingHorizontal: 40,
+    paddingVertical: 28,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+  },
+  listRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 18,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(17,17,17,0.12)",
+    borderBottomStyle: "solid",
+  },
+  listRowLast: { borderBottomWidth: 0 },
+  listDay: {
+    width: 46,
+    fontFamily: "Helvetica",
+    fontWeight: "bold",
+    fontSize: 14,
+    color: CORAL,
+    letterSpacing: 1.5,
+  },
+  listName: {
+    flex: 1,
+    fontFamily: "Helvetica",
+    fontWeight: "bold",
+    fontSize: 13.5,
+    lineHeight: 1.3,
+    color: INK,
+  },
+  listEmpty: {
+    flex: 1,
+    fontSize: 11,
+    fontStyle: "italic",
+    color: SHEET_TOKENS.mutedInk,
   },
   row: {
     flex: 1,
@@ -499,7 +545,38 @@ function GridCell({
   return <FridgeBonusCard seed={seed} />;
 }
 
-export function MenuPdfDocument({ menu }: { menu: WeeklyMenuData }) {
+function ListBody({ byDay }: { byDay: SlotsByDay }) {
+  return (
+    <View style={s.list}>
+      {SHEET_DAY_ORDER.map((day, i) => {
+        const slots = byDay.get(day);
+        const meals = (["lunch", "dinner"] as MealSlot[])
+          .map((sl) => slots?.get(sl))
+          .filter((m): m is MenuMeal => !!m?.name?.trim());
+        const rowStyle =
+          i === SHEET_DAY_ORDER.length - 1 ? [s.listRow, s.listRowLast] : s.listRow;
+        return (
+          <View key={day} style={rowStyle}>
+            <Text style={s.listDay}>{DAY_ABBR[day]}</Text>
+            {meals.length === 0 ? (
+              <Text style={s.listEmpty}>Journee libre</Text>
+            ) : (
+              <Text style={s.listName}>{meals.map((m) => m.name).join(" · ")}</Text>
+            )}
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
+export function MenuPdfDocument({
+  menu,
+  view = "grid",
+}: {
+  menu: WeeklyMenuData;
+  view?: SheetView;
+}) {
   const byDay = groupMealsByDay(menu.meals);
   const bonusSeed = menuBonusSeed(menu);
 
@@ -523,25 +600,29 @@ export function MenuPdfDocument({ menu }: { menu: WeeklyMenuData }) {
 
         <Stripes />
 
-        {/* Grille 3x3 fixe */}
-        <View style={s.grid}>
-          {[0, 1, 2].map((r) => (
-            <View key={r} style={[s.row, r === 2 ? s.rowLast : {}]}>
-              {[0, 1, 2].map((c) => {
-                const i = r * 3 + c;
-                return (
-                  <View key={c} style={[s.cell, c === 2 ? s.cellLast : {}]}>
-                    <GridCell
-                      cellIndex={i}
-                      byDay={byDay}
-                      seed={bonusSeed}
-                    />
-                  </View>
-                );
-              })}
-            </View>
-          ))}
-        </View>
+        {view === "list" ? (
+          <ListBody byDay={byDay} />
+        ) : (
+          /* Grille 3x3 fixe */
+          <View style={s.grid}>
+            {[0, 1, 2].map((r) => (
+              <View key={r} style={[s.row, r === 2 ? s.rowLast : {}]}>
+                {[0, 1, 2].map((c) => {
+                  const i = r * 3 + c;
+                  return (
+                    <View key={c} style={[s.cell, c === 2 ? s.cellLast : {}]}>
+                      <GridCell
+                        cellIndex={i}
+                        byDay={byDay}
+                        seed={bonusSeed}
+                      />
+                    </View>
+                  );
+                })}
+              </View>
+            ))}
+          </View>
+        )}
 
         <Stripes light />
 

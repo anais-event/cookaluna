@@ -27,6 +27,16 @@ export const DAY_LABELS: Record<DayKey, string> = {
   sunday: "Dimanche",
 };
 
+export const DAY_ABBR: Record<DayKey, string> = {
+  monday: "LUN",
+  tuesday: "MAR",
+  wednesday: "MER",
+  thursday: "JEU",
+  friday: "VEN",
+  saturday: "SAM",
+  sunday: "DIM",
+};
+
 export const SLOT_LABELS: Record<MealSlot, string> = {
   lunch: "Midi",
   dinner: "Soir",

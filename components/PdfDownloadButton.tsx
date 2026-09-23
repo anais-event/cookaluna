@@ -3,9 +3,16 @@
 import { useState } from "react";
 import { Download, Loader2 } from "lucide-react";
 import { track } from "@/lib/analytics";
+import type { SheetView } from "@/lib/store";
 import type { WeeklyMenuData } from "@/lib/types";
 
-export function PdfDownloadButton({ menu }: { menu: WeeklyMenuData }) {
+export function PdfDownloadButton({
+  menu,
+  view = "grid",
+}: {
+  menu: WeeklyMenuData;
+  view?: SheetView;
+}) {
   const [busy, setBusy] = useState(false);
 
   const download = async () => {
@@ -16,7 +23,7 @@ export function PdfDownloadButton({ menu }: { menu: WeeklyMenuData }) {
         import("@react-pdf/renderer"),
         import("./MenuPdfDocument"),
       ]);
-      const blob = await pdf(<MenuPdfDocument menu={menu} />).toBlob();
+      const blob = await pdf(<MenuPdfDocument menu={menu} view={view} />).toBlob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
