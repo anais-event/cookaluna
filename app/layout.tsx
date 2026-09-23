@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { StoreProvider } from "@/lib/store";
 import { SITE_NAME, SITE_URL } from "@/lib/seo";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const display = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -81,6 +82,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_JSONLD) }}
         />
         <StoreProvider>{children}</StoreProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
