@@ -115,14 +115,21 @@ function BonusCard({ bonus }: { bonus: BonusContent }) {
           <>
             <p className="text-[10px] italic text-ink/60">{bonus.instruction}</p>
             <div className="my-1 flex flex-1 items-center justify-center">
-              <svg viewBox="0 0 100 100" width="88" height="88">
+              <svg
+                viewBox="0 0 100 100"
+                width="140"
+                height="140"
+                className="max-h-full"
+              >
                 {bonus.shape.paths.map((d, i) => (
                   <path
                     key={i}
                     d={d}
                     stroke="var(--ink)"
-                    strokeWidth={1.6}
+                    strokeWidth={2.2}
                     fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
                 ))}
               </svg>

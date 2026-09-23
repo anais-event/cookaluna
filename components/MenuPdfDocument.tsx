@@ -438,9 +438,17 @@ function BonusColoring({
     <View style={s.bonusBody}>
       <Text style={s.bonusInstruction}>{bonus.instruction}</Text>
       <View style={s.coloringWrap}>
-        <Svg width={110} height={110} viewBox="0 0 100 100">
+        <Svg width={150} height={150} viewBox="0 0 100 100">
           {bonus.shape.paths.map((d, i) => (
-            <Path key={i} d={d} stroke={INK} strokeWidth={1.6} fill="none" />
+            <Path
+              key={i}
+              d={d}
+              stroke={INK}
+              strokeWidth={2.2}
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           ))}
         </Svg>
       </View>

@@ -83,32 +83,35 @@ const GAMES: { prompt: string; answer: string }[] = [
   },
 ];
 
-// Contours simples, une seule "line" par forme suffit pour rester lisible
-// une fois imprime. ViewBox 100x100 partout.
+// Contours simples remplissant tout le viewBox 100x100 pour rester bien
+// lisibles apres impression. Formes generees pour etre reconnaissables
+// meme sans remplissage.
 const SHAPES: ColoringShape[] = [
   {
     key: "tomato",
     label: "Une petite tomate",
     paths: [
-      // corps
-      "M50 30 C28 30 22 50 25 68 C28 84 42 90 50 90 C58 90 72 84 75 68 C78 50 72 30 50 30 Z",
-      // feuilles
-      "M42 32 L46 22 L50 30 L54 22 L58 32",
+      // corps rond (presque plein viewBox)
+      "M50 22 C22 22 12 46 15 68 C18 88 34 96 50 96 C66 96 82 88 85 68 C88 46 78 22 50 22 Z",
+      // feuilles en couronne
+      "M32 24 L38 10 L44 22 L50 8 L56 22 L62 10 L68 24",
       // tige
-      "M50 22 L50 16",
+      "M50 8 L50 2",
     ],
   },
   {
     key: "lemon",
     label: "Un citron tout jaune",
     paths: [
-      // corps ovale
-      "M30 55 C30 40 40 30 50 30 C60 30 70 40 70 55 C70 70 60 80 50 80 C40 80 30 70 30 55 Z",
-      // petit bout haut
-      "M50 28 L50 22",
-      "M47 22 L53 22",
-      // detail feuille
-      "M50 22 C55 18 62 20 62 26",
+      // corps ovale allonge
+      "M12 50 C12 30 30 12 50 12 C70 12 88 30 88 50 C88 74 70 90 50 90 C30 90 12 74 12 50 Z",
+      // pointe haute
+      "M50 12 L50 4",
+      "M44 4 L56 4",
+      // feuille laterale
+      "M56 6 C68 -2 82 4 82 18",
+      // petit relief
+      "M22 50 C28 44 32 44 38 50",
     ],
   },
   {
@@ -116,30 +119,33 @@ const SHAPES: ColoringShape[] = [
     label: "La casserole du soir",
     paths: [
       // corps casserole
-      "M22 45 L78 45 L74 82 L26 82 Z",
+      "M14 40 L86 40 L80 92 L20 92 Z",
       // rebord
-      "M20 45 L80 45",
+      "M10 40 L90 40",
+      "M10 40 L10 44 L90 44 L90 40",
       // anses
-      "M22 50 C12 50 12 62 22 62",
-      "M78 50 C88 50 88 62 78 62",
+      "M14 50 C2 50 2 68 14 68",
+      "M86 50 C98 50 98 68 86 68",
       // vapeur
-      "M40 35 C42 30 38 26 42 20",
-      "M52 35 C54 30 50 26 54 20",
-      "M64 35 C66 30 62 26 66 20",
+      "M35 30 C38 22 32 18 36 8",
+      "M50 30 C53 22 47 18 51 8",
+      "M65 30 C68 22 62 18 66 8",
     ],
   },
   {
     key: "apple",
     label: "Une pomme croquante",
     paths: [
-      // corps
-      "M50 34 C34 34 24 46 26 62 C28 78 42 86 50 86 C58 86 72 78 74 62 C76 46 66 34 50 34 Z",
-      // creux
-      "M50 34 C50 28 54 26 58 24",
+      // corps double lobe
+      "M50 30 C30 30 16 44 18 62 C20 82 36 94 50 94 C64 94 80 82 82 62 C84 44 70 30 50 30 Z",
+      // creux central
+      "M50 30 C50 22 54 18 60 14",
       // tige
-      "M50 34 L50 24",
+      "M50 30 L50 12",
       // feuille
-      "M50 28 C56 22 64 22 66 30",
+      "M50 22 C60 12 76 12 78 26",
+      // veine feuille
+      "M56 20 C62 22 68 22 72 20",
     ],
   },
 ];
@@ -158,9 +164,14 @@ const VARIANT_ORDER: BonusVariant[] = ["joke", "game", "coloring"];
 
 // Fait tourner la surprise semaine apres semaine. Meme seed -> meme
 // surprise, ce qui rend le PDF deterministe pour une semaine donnee.
+// On decoupe le hash en tranches independantes : sinon un simple %N sur
+// le meme entier corele fortement le choix de la variante et le choix
+// du contenu (ex : coloring finit toujours sur la meme forme).
 export function getFridgeBonus(seed: string): BonusContent {
   const h = seedHash(seed);
   const variant = VARIANT_ORDER[h % VARIANT_ORDER.length];
+  const contentSlot = (h >>> 5) & 0xffff;
+  const shapeSlot = (h >>> 11) & 0xffff;
 
   switch (variant) {
     case "reminder":
@@ -171,7 +182,7 @@ export function getFridgeBonus(seed: string): BonusContent {
         footer: "✎ À compléter à la main",
       };
     case "joke": {
-      const j = JOKES[h % JOKES.length];
+      const j = JOKES[contentSlot % JOKES.length];
       return {
         type: "joke",
         title: "La blague du frigo",
@@ -181,7 +192,7 @@ export function getFridgeBonus(seed: string): BonusContent {
       };
     }
     case "game": {
-      const g = GAMES[h % GAMES.length];
+      const g = GAMES[contentSlot % GAMES.length];
       return {
         type: "game",
         title: "La devinette du frigo",
@@ -191,7 +202,7 @@ export function getFridgeBonus(seed: string): BonusContent {
       };
     }
     case "coloring": {
-      const shape = SHAPES[h % SHAPES.length];
+      const shape = SHAPES[shapeSlot % SHAPES.length];
       return {
         type: "coloring",
         title: "Le coloriage du frigo",
