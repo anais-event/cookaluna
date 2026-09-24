@@ -5,7 +5,6 @@ import { Printer, RefreshCw, Loader2, Check } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { track } from "@/lib/analytics";
 import { generateDemoMenu } from "@/lib/generator";
-import { PdfDownloadButton } from "./PdfDownloadButton";
 import type { WeeklyMenuData } from "@/lib/types";
 
 export function MenuToolbar({ menu }: { menu: WeeklyMenuData }) {
@@ -70,7 +69,7 @@ export function MenuToolbar({ menu }: { menu: WeeklyMenuData }) {
           onClick={() => setShowPrintOptions((v) => !v)}
           className="btn btn-coral btn-sm"
         >
-          <Printer size={16} aria-hidden="true" /> Imprimer
+          <Printer size={16} aria-hidden="true" /> Télécharger / imprimer
         </button>
 
         {showPrintOptions && (
@@ -119,7 +118,6 @@ export function MenuToolbar({ menu }: { menu: WeeklyMenuData }) {
         )}
       </div>
 
-      <PdfDownloadButton />
     </div>
   );
 }
