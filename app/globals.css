@@ -295,9 +295,149 @@ h3,
     page-break-inside: avoid;
   }
 
-  /* Quand la modale recette est ouverte, masquer le menu sheet */
-  body[data-print-recipe="true"] .menu-sheet {
+  /* Par défaut, les recettes imprimables sont cachées */
+  .print-recipes-container {
     display: none !important;
+  }
+
+  /* Quand "Menu + recettes" est choisi, afficher les recettes après le menu */
+  body[data-print-recipes="true"] .print-recipes-container {
+    display: block !important;
+  }
+
+  /* Chaque recette = demi-page, jamais coupée */
+  .print-recipe-half {
+    width: 210mm;
+    min-height: 130mm;
+    max-height: 148mm;
+    padding: 8mm 12mm;
+    border-bottom: 2px solid #eee;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    overflow: hidden;
+  }
+  .print-recipe-half:nth-child(even) {
+    border-bottom: none;
+  }
+  .print-recipe-day {
+    font-family: var(--font-display, system-ui, sans-serif);
+    font-size: 9pt;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--coral, #FF6B5F);
+    margin-bottom: 2mm;
+  }
+  .print-recipe-name {
+    font-family: var(--font-display, system-ui, sans-serif);
+    font-size: 16pt;
+    font-weight: 900;
+    line-height: 1.2;
+    margin: 0 0 2mm;
+    color: #111;
+  }
+  .print-recipe-meta {
+    font-size: 9pt;
+    color: #555;
+    margin-bottom: 4mm;
+  }
+  .print-recipe-content {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 6mm;
+  }
+  .print-recipe-section {
+    font-size: 8pt;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    color: var(--coral, #FF6B5F);
+    margin-bottom: 2mm;
+  }
+  .print-recipe-ingredients ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .print-recipe-ingredients li {
+    font-size: 9pt;
+    padding: 1mm 0;
+    border-bottom: 1px solid #eee;
+  }
+  .print-recipe-steps ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .print-recipe-steps li {
+    font-size: 9pt;
+    line-height: 1.5;
+    margin-bottom: 2mm;
+  }
+  .print-step-num {
+    font-weight: 900;
+    color: var(--coral, #FF6B5F);
+  }
+  .print-recipe-notes {
+    grid-column: 1 / -1;
+    font-size: 8pt;
+    color: #666;
+    margin-top: 2mm;
+    padding: 2mm;
+    background: #f9f5f0;
+    border-radius: 1mm;
+  }
+
+  /* Page récap en fin de document */
+  .print-summary {
+    width: 210mm;
+    padding: 25mm 20mm;
+    break-before: page;
+    page-break-before: always;
+    text-align: center;
+  }
+  .print-summary-brand {
+    font-family: var(--font-display, system-ui, sans-serif);
+    font-size: 14pt;
+    font-weight: 900;
+    letter-spacing: 0.3em;
+    color: var(--coral, #FF6B5F);
+    margin-bottom: 8mm;
+  }
+  .print-summary-title {
+    font-family: var(--font-display, system-ui, sans-serif);
+    font-size: 22pt;
+    font-weight: 900;
+    margin: 0 0 10mm;
+    color: #111;
+  }
+  .print-summary-body {
+    text-align: left;
+    max-width: 140mm;
+    margin: 0 auto;
+  }
+  .print-summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 4mm 0;
+    border-bottom: 1px solid #eee;
+  }
+  .print-summary-label {
+    font-size: 10pt;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--coral, #FF6B5F);
+  }
+  .print-summary-value {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #111;
+  }
+  .print-summary-footer {
+    margin-top: 15mm;
+    font-size: 9pt;
+    color: #999;
   }
 }
 

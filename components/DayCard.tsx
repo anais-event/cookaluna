@@ -83,7 +83,6 @@ export function DayCard({ day, slots }: { day: DayKey; slots: MealSlot[] }) {
                 <MealCard
                   meal={meal}
                   onChange={() => setEdit({ slot, mode: "change" })}
-                  onEdit={() => setEdit({ slot, mode: "manual" })}
                   onDelete={() => clearMealAt(day, slot)}
                   onViewRecipe={
                     meal.mealId && getMealById(meal.mealId)?.recipe

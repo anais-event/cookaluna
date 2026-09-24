@@ -34,11 +34,12 @@ function DayCard({ day, slots }: { day: DayKey; slots?: Map<MealSlot, MenuMeal> 
   );
   return (
     <div className="sheet-day flex h-full flex-col overflow-hidden rounded-2xl border-2 border-ink bg-white">
-      <div className="day-head flex items-center justify-between gap-2 border-b-2 border-ink bg-coral-light px-3 py-1.5">
+      <div className="day-head flex items-center justify-center gap-1.5 border-b-2 border-ink bg-coral-light px-3 py-2">
+        <Sparkle size={9} color="var(--coral)" />
         <span className="font-display text-[12.5px] font-extrabold uppercase tracking-wide text-ink">
           {DAY_LABELS[day]}
         </span>
-        <Sparkle size={10} color="var(--coral)" />
+        <Sparkle size={9} color="var(--coral)" />
       </div>
       <div className="day-body flex flex-1 flex-col justify-center gap-3 px-2.5 py-2.5">
         {activeSlots.length === 0 ? (

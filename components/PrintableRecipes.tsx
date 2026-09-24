@@ -1,6 +1,6 @@
 "use client";
 
-import { orderedDays, DAY_LABELS, DIFFICULTY_LABELS } from "@/lib/constants";
+import { orderedDays, DAY_LABELS, DIFFICULTY_LABELS, DIET_LABELS, ALLERGEN_LABELS } from "@/lib/constants";
 import { getMealById } from "@/lib/catalog";
 import { scaleRecipe, portionLabel, formatQuantity } from "@/lib/recipeScale";
 import type { DayKey, MealProfile, MenuMeal, WeeklyMenuData } from "@/lib/types";
@@ -63,6 +63,62 @@ function HalfPageRecipe({
   );
 }
 
+function PrintSummary({
+  menu,
+  profile,
+}: {
+  menu: WeeklyMenuData;
+  profile: MealProfile;
+}) {
+  const totalMeals = menu.meals.filter((m) => m.name?.trim()).length;
+  const diets = profile.dietaryPreferences.filter((d) => d !== "none");
+  const allergies = profile.allergies;
+
+  return (
+    <div className="print-summary">
+      <div className="print-summary-brand">COOKALUNA</div>
+      <h2 className="print-summary-title">Récapitulatif</h2>
+      <div className="print-summary-body">
+        <div className="print-summary-item">
+          <span className="print-summary-label">Repas pour</span>
+          <span className="print-summary-value">{portionLabel(profile)}</span>
+        </div>
+        <div className="print-summary-item">
+          <span className="print-summary-label">Nombre de repas</span>
+          <span className="print-summary-value">{totalMeals} repas cette semaine</span>
+        </div>
+        {diets.length > 0 && (
+          <div className="print-summary-item">
+            <span className="print-summary-label">Régime</span>
+            <span className="print-summary-value">
+              {diets.map((d) => DIET_LABELS[d]).join(", ")}
+            </span>
+          </div>
+        )}
+        {allergies.length > 0 && (
+          <div className="print-summary-item">
+            <span className="print-summary-label">Sans</span>
+            <span className="print-summary-value">
+              {allergies.map((a) => ALLERGEN_LABELS[a]).join(", ")}
+            </span>
+          </div>
+        )}
+        {profile.foodsToAvoid.length > 0 && (
+          <div className="print-summary-item">
+            <span className="print-summary-label">Aliments évités</span>
+            <span className="print-summary-value">
+              {profile.foodsToAvoid.join(", ")}
+            </span>
+          </div>
+        )}
+      </div>
+      <p className="print-summary-footer">
+        Généré avec Cookaluna · La semaine est servie.
+      </p>
+    </div>
+  );
+}
+
 export function PrintableRecipes({
   menu,
   profile,
@@ -82,13 +138,12 @@ export function PrintableRecipes({
       }),
   );
 
-  if (mealsWithRecipes.length === 0) return null;
-
   return (
     <div className="print-recipes-container print-only">
       {mealsWithRecipes.map((meal, i) => (
         <HalfPageRecipe key={`${meal.day}-${meal.slot}-${i}`} meal={meal} profile={profile} />
       ))}
+      <PrintSummary menu={menu} profile={profile} />
     </div>
   );
 }

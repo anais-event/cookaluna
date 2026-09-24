@@ -11,8 +11,6 @@ export function FavoritesList() {
   const { favorites, toggleFavorite, profile } = useStore();
   const [viewMeal, setViewMeal] = useState<MenuMeal | null>(null);
 
-  if (favorites.length === 0) return null;
-
   const openRecipe = (mealId: string, name: string) => {
     const cat = getMealById(mealId);
     if (!cat) return;
@@ -40,9 +38,12 @@ export function FavoritesList() {
         </h2>
       </div>
       <p className="mt-1 text-ink/70">
-        Vos coups de coeur, à portée de clic.
+        {favorites.length > 0
+          ? "Vos coups de coeur, à portée de clic."
+          : "Cliquez sur le nom d'un plat, puis \"Garder\" pour sauvegarder une recette ici."}
       </p>
 
+      {favorites.length === 0 ? null : (
       <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {favorites.map((fav) => {
           const cat = getMealById(fav.mealId);
@@ -82,6 +83,7 @@ export function FavoritesList() {
           );
         })}
       </div>
+      )}
 
       {viewMeal && (
         <RecipeModal

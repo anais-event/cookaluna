@@ -11,11 +11,12 @@ import { WeeklyMenu } from "@/components/WeeklyMenu";
 import { MenuToolbar } from "@/components/MenuToolbar";
 import { PrintPreview } from "@/components/PrintPreview";
 import { PrintableMenu } from "@/components/PrintableMenu";
+import { PrintableRecipes } from "@/components/PrintableRecipes";
 import { FavoritesList } from "@/components/FavoritesList";
 import { Sparkle } from "@/components/Sparkle";
 
 export default function MenuPage() {
-  const { menu, hydrated, setMenu, sheetView, setSheetView } = useStore();
+  const { menu, hydrated, setMenu, sheetView, setSheetView, profile } = useStore();
 
   // Toujours montrer quelque chose : à défaut, un menu d'exemple.
   useEffect(() => {
@@ -59,9 +60,6 @@ export default function MenuPage() {
               </p>
             )}
           </div>
-          <Link href="/create" className="btn btn-ghost btn-sm">
-            Recommencer
-          </Link>
         </div>
 
         <div className="mt-8">
@@ -120,13 +118,14 @@ export default function MenuPage() {
             </div>
           </div>
           <div className="mt-6">
-            <PrintPreview menu={menu} view={sheetView} />
+            <PrintPreview menu={menu} view={sheetView} startDay={profile.startDay} />
           </div>
         </section>
       </main>
 
       {/* Version imprimable pure (masquée à l'écran) */}
-      <PrintableMenu menu={menu} view={sheetView} />
+      <PrintableMenu menu={menu} view={sheetView} startDay={profile.startDay} />
+      <PrintableRecipes menu={menu} profile={profile} startDay={profile.startDay} />
 
       <Footer />
     </>
