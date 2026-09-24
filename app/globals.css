@@ -321,7 +321,7 @@ h3,
   }
   .print-recipe-day {
     font-family: var(--font-display, system-ui, sans-serif);
-    font-size: 9pt;
+    font-size: 11pt;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 0.2em;
@@ -330,14 +330,14 @@ h3,
   }
   .print-recipe-name {
     font-family: var(--font-display, system-ui, sans-serif);
-    font-size: 16pt;
+    font-size: 18pt;
     font-weight: 900;
     line-height: 1.2;
     margin: 0 0 2mm;
     color: #111;
   }
   .print-recipe-meta {
-    font-size: 9pt;
+    font-size: 11pt;
     color: #555;
     margin-bottom: 4mm;
   }
@@ -347,7 +347,7 @@ h3,
     gap: 6mm;
   }
   .print-recipe-section {
-    font-size: 8pt;
+    font-size: 10pt;
     font-weight: 900;
     letter-spacing: 0.12em;
     color: var(--coral, #FF6B5F);
@@ -359,8 +359,8 @@ h3,
     margin: 0;
   }
   .print-recipe-ingredients li {
-    font-size: 9pt;
-    padding: 1mm 0;
+    font-size: 11pt;
+    padding: 1.5mm 0;
     border-bottom: 1px solid #eee;
   }
   .print-recipe-steps ol {
@@ -369,7 +369,7 @@ h3,
     margin: 0;
   }
   .print-recipe-steps li {
-    font-size: 9pt;
+    font-size: 11pt;
     line-height: 1.5;
     margin-bottom: 2mm;
   }
@@ -379,7 +379,7 @@ h3,
   }
   .print-recipe-notes {
     grid-column: 1 / -1;
-    font-size: 8pt;
+    font-size: 10pt;
     color: #666;
     margin-top: 2mm;
     padding: 2mm;
@@ -387,58 +387,6 @@ h3,
     border-radius: 1mm;
   }
 
-  /* Page récap en fin de document */
-  .print-summary {
-    width: 210mm;
-    padding: 25mm 20mm;
-    break-before: page;
-    page-break-before: always;
-    text-align: center;
-  }
-  .print-summary-brand {
-    font-family: var(--font-display, system-ui, sans-serif);
-    font-size: 14pt;
-    font-weight: 900;
-    letter-spacing: 0.3em;
-    color: var(--coral, #FF6B5F);
-    margin-bottom: 8mm;
-  }
-  .print-summary-title {
-    font-family: var(--font-display, system-ui, sans-serif);
-    font-size: 22pt;
-    font-weight: 900;
-    margin: 0 0 10mm;
-    color: #111;
-  }
-  .print-summary-body {
-    text-align: left;
-    max-width: 140mm;
-    margin: 0 auto;
-  }
-  .print-summary-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding: 4mm 0;
-    border-bottom: 1px solid #eee;
-  }
-  .print-summary-label {
-    font-size: 10pt;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--coral, #FF6B5F);
-  }
-  .print-summary-value {
-    font-size: 11pt;
-    font-weight: 700;
-    color: #111;
-  }
-  .print-summary-footer {
-    margin-top: 15mm;
-    font-size: 9pt;
-    color: #999;
-  }
 }
 
 /* Si l'utilisateur imprime en noir et blanc, la structure reste lisible :
