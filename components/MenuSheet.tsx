@@ -1,4 +1,3 @@
-import { Moon, Sun } from "lucide-react";
 import { Sparkle } from "./Sparkle";
 import {
   DAY_ABBR,
@@ -20,14 +19,6 @@ import { getFridgeBonus, type BonusContent } from "@/lib/fridgeBonus";
 import type { SheetView } from "@/lib/store";
 import type { DayKey, MealSlot, MenuMeal, WeeklyMenuData } from "@/lib/types";
 
-function SlotIcon({ slot }: { slot: MealSlot }) {
-  return slot === "lunch" ? (
-    <Sun size={11} strokeWidth={2.5} className="text-coral" aria-hidden="true" />
-  ) : (
-    <Moon size={11} strokeWidth={2.5} className="text-coral" aria-hidden="true" />
-  );
-}
-
 function DayCard({ day, slots }: { day: DayKey; slots?: Map<MealSlot, MenuMeal> }) {
   const activeSlots = (["lunch", "dinner"] as MealSlot[]).filter((sl) =>
     slots?.get(sl)?.name?.trim(),
@@ -41,7 +32,7 @@ function DayCard({ day, slots }: { day: DayKey; slots?: Map<MealSlot, MenuMeal> 
         </span>
         <Sparkle size={9} color="var(--coral)" />
       </div>
-      <div className="day-body flex flex-1 flex-col justify-center gap-3 px-2.5 py-2.5 overflow-hidden">
+      <div className="day-body flex flex-1 flex-col justify-center gap-2 px-2 py-2">
         {activeSlots.length === 0 ? (
           <p className="text-center text-[10px] italic text-ink/50">Journée libre</p>
         ) : (
@@ -49,14 +40,14 @@ function DayCard({ day, slots }: { day: DayKey; slots?: Map<MealSlot, MenuMeal> 
             const meal = slots!.get(sl)!;
             return (
               <div key={sl} className="meal min-w-0">
-                <p className="flex items-center gap-1.5 font-display text-[9px] font-bold uppercase tracking-[0.12em] text-coral">
-                  <SlotIcon slot={sl} /> {SLOT_LABELS[sl]}
+                <p className="font-display text-[8px] font-bold uppercase tracking-[0.1em] text-coral">
+                  {SLOT_LABELS[sl]}
                 </p>
-                <p className="mt-0.5 line-clamp-3 break-words text-[10.5px] font-semibold leading-snug text-ink">
+                <p className="mt-0.5 text-[10px] font-semibold leading-tight text-ink" style={{ overflowWrap: "break-word", wordBreak: "break-word" }}>
                   {meal.name}
                 </p>
                 {(meal.prepTime > 0 || meal.difficulty) && (
-                  <p className="mt-0.5 text-[8.5px] text-ink/55">
+                  <p className="mt-0.5 text-[7.5px] text-ink/55">
                     {meal.prepTime > 0 ? `${meal.prepTime} min` : null}
                     {meal.prepTime > 0 && meal.difficulty ? " · " : null}
                     {meal.difficulty ? DIFFICULTY_LABELS[meal.difficulty] : null}
