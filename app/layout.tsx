@@ -4,6 +4,7 @@ import "./globals.css";
 import { StoreProvider } from "@/lib/store";
 import { SITE_NAME, SITE_URL } from "@/lib/seo";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 
 const display = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -84,6 +85,7 @@ export default function RootLayout({
         />
         <StoreProvider>{children}</StoreProvider>
         <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );
