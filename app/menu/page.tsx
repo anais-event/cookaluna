@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, LayoutGrid, List } from "lucide-react";
+import { ArrowLeft, LayoutGrid, List, Users } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { createSampleMenu } from "@/lib/sampleMenu";
 import { Header } from "@/components/Header";
@@ -14,6 +14,8 @@ import { PrintableMenu } from "@/components/PrintableMenu";
 import { PrintableRecipes } from "@/components/PrintableRecipes";
 import { FavoritesList } from "@/components/FavoritesList";
 import { Sparkle } from "@/components/Sparkle";
+import { portionLabel } from "@/lib/recipeScale";
+import { DIET_LABELS, ALLERGEN_LABELS } from "@/lib/constants";
 
 export default function MenuPage() {
   const { menu, hydrated, setMenu, sheetView, setSheetView, profile } = useStore();
@@ -54,6 +56,22 @@ export default function MenuPage() {
               Votre semaine est servie.
             </h1>
             <p className="mt-2 text-lg text-ink/70">Vous pouvez tout changer.</p>
+            <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold text-ink/70">
+              <Users size={15} className="text-coral" aria-hidden="true" />
+              <span>{portionLabel(profile)}</span>
+              <span aria-hidden="true">·</span>
+              <span>{menu.meals.filter((m) => m.name?.trim()).length} repas</span>
+              {profile.dietaryPreferences.filter((d) => d !== "none").map((d) => (
+                <span key={d}>
+                  <span aria-hidden="true">·</span> {DIET_LABELS[d]}
+                </span>
+              ))}
+              {profile.allergies.map((a) => (
+                <span key={a}>
+                  <span aria-hidden="true">·</span> Sans {ALLERGEN_LABELS[a].toLowerCase()}
+                </span>
+              ))}
+            </p>
             {menu.theme && (
               <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border-2 border-ink bg-coral-light px-3 py-1 text-sm font-bold">
                 <Sparkle size={13} color="var(--coral)" /> Thème surprise : {menu.theme}
