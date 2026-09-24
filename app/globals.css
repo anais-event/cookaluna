@@ -294,6 +294,10 @@ h3,
     break-inside: avoid;
     page-break-inside: avoid;
   }
+  .menu-sheet .sheet-day .meal p {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
 
   /* Par défaut, les recettes imprimables sont cachées */
   .print-recipes-container {

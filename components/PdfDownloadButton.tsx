@@ -48,8 +48,10 @@ export function PdfDownloadButton() {
 
       const outer = element;
       const inner = element.querySelector(".menu-sheet-preview-inner") as HTMLElement | null;
+      const sheet = element.querySelector(".menu-sheet") as HTMLElement | null;
       const savedOuterStyle = outer.style.cssText;
       const savedInnerStyle = inner?.style.cssText ?? "";
+      const savedSheetStyle = sheet?.style.cssText ?? "";
       outer.style.width = "794px";
       outer.style.maxWidth = "794px";
       outer.style.overflow = "visible";
@@ -57,6 +59,11 @@ export function PdfDownloadButton() {
         inner.style.transform = "none";
         inner.style.width = "794px";
         inner.style.height = "auto";
+      }
+      if (sheet) {
+        sheet.style.overflow = "visible";
+        sheet.style.width = "794px";
+        sheet.style.height = "auto";
       }
 
       const menuCanvas = await html2canvas(outer, {
@@ -69,6 +76,7 @@ export function PdfDownloadButton() {
 
       outer.style.cssText = savedOuterStyle;
       if (inner) inner.style.cssText = savedInnerStyle;
+      if (sheet) sheet.style.cssText = savedSheetStyle;
 
       addCanvasToPdf(menuCanvas, false);
 

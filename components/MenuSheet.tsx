@@ -33,7 +33,7 @@ function DayCard({ day, slots }: { day: DayKey; slots?: Map<MealSlot, MenuMeal> 
     slots?.get(sl)?.name?.trim(),
   );
   return (
-    <div className="sheet-day flex h-full flex-col overflow-hidden rounded-2xl border-2 border-ink bg-white">
+    <div className="sheet-day flex h-full flex-col rounded-2xl border-2 border-ink bg-white">
       <div className="day-head flex items-center justify-center gap-1.5 border-b-2 border-ink bg-coral-light px-3 py-2">
         <Sparkle size={9} color="var(--coral)" />
         <span className="font-display text-[12.5px] font-extrabold uppercase tracking-wide text-ink">
@@ -41,22 +41,22 @@ function DayCard({ day, slots }: { day: DayKey; slots?: Map<MealSlot, MenuMeal> 
         </span>
         <Sparkle size={9} color="var(--coral)" />
       </div>
-      <div className="day-body flex flex-1 flex-col justify-center gap-3 px-2.5 py-2.5">
+      <div className="day-body flex flex-1 flex-col justify-center gap-3 px-2.5 py-2.5 overflow-hidden">
         {activeSlots.length === 0 ? (
           <p className="text-center text-[10px] italic text-ink/50">Journée libre</p>
         ) : (
           activeSlots.map((sl) => {
             const meal = slots!.get(sl)!;
             return (
-              <div key={sl} className="meal">
-                <p className="flex items-center gap-1.5 font-display text-[9.5px] font-bold uppercase tracking-[0.14em] text-coral">
+              <div key={sl} className="meal min-w-0">
+                <p className="flex items-center gap-1.5 font-display text-[9px] font-bold uppercase tracking-[0.12em] text-coral">
                   <SlotIcon slot={sl} /> {SLOT_LABELS[sl]}
                 </p>
-                <p className="mt-0.5 line-clamp-3 text-[11.5px] font-semibold leading-snug text-ink">
+                <p className="mt-0.5 line-clamp-3 break-words text-[10.5px] font-semibold leading-snug text-ink">
                   {meal.name}
                 </p>
                 {(meal.prepTime > 0 || meal.difficulty) && (
-                  <p className="mt-0.5 text-[9.5px] text-ink/55">
+                  <p className="mt-0.5 text-[8.5px] text-ink/55">
                     {meal.prepTime > 0 ? `${meal.prepTime} min` : null}
                     {meal.prepTime > 0 && meal.difficulty ? " · " : null}
                     {meal.difficulty ? DIFFICULTY_LABELS[meal.difficulty] : null}
