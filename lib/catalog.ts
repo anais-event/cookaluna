@@ -1,4 +1,5 @@
 import type { Allergen, CostLevel, Diet, Difficulty, Equipment, Meal, Recipe } from "./types";
+import { CATALOG_RECIPES } from "./catalog-recipes";
 
 // Base alimentaire utilisée pour dériver les régimes compatibles.
 type Base = "meat" | "pork" | "fish" | "veg" | "vegan";
@@ -56,7 +57,7 @@ function meal(r: Raw): Meal {
     alternativeEquipment: r.alt ?? [],
     reuseIngredients: r.reuse ?? [],
     category: r.category,
-    recipe: r.recipe,
+    recipe: r.recipe ?? CATALOG_RECIPES[r.id],
   };
 }
 
