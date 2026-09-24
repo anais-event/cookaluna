@@ -3,35 +3,51 @@
 import { useState } from "react";
 import { Download, Loader2 } from "lucide-react";
 import { track } from "@/lib/analytics";
-import type { SheetView } from "@/lib/store";
-import type { WeeklyMenuData } from "@/lib/types";
 
-export function PdfDownloadButton({
-  menu,
-  view = "grid",
-}: {
-  menu: WeeklyMenuData;
-  view?: SheetView;
-}) {
+export function PdfDownloadButton() {
   const [busy, setBusy] = useState(false);
 
   const download = async () => {
+    const element = document.getElementById("print-canvas-area");
+    if (!element) return;
+
     setBusy(true);
     try {
-      // Import dynamique : @react-pdf/renderer reste hors du bundle initial.
-      const [{ pdf }, { MenuPdfDocument }] = await Promise.all([
-        import("@react-pdf/renderer"),
-        import("./MenuPdfDocument"),
+      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+        import("html2canvas"),
+        import("jspdf"),
       ]);
-      const blob = await pdf(<MenuPdfDocument menu={menu} view={view} />).toBlob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "cookaluna-menu.pdf";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+
+      const canvas = await html2canvas(element, {
+        scale: 3,
+        useCORS: true,
+        logging: false,
+        backgroundColor: null,
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      const imgRatio = canvas.width / canvas.height;
+      const pageRatio = pdfWidth / pdfHeight;
+
+      let w: number, h: number, x: number, y: number;
+      if (imgRatio > pageRatio) {
+        w = pdfWidth;
+        h = pdfWidth / imgRatio;
+        x = 0;
+        y = 0;
+      } else {
+        h = pdfHeight;
+        w = pdfHeight * imgRatio;
+        x = (pdfWidth - w) / 2;
+        y = 0;
+      }
+
+      pdf.addImage(imgData, "PNG", x, y, w, h, undefined, "FAST");
+      pdf.save("mon-menu-cookaluna.pdf");
       track("pdf_downloaded");
     } catch (err) {
       console.error("PDF error", err);
