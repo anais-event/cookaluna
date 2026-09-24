@@ -11,11 +11,8 @@ export function PdfDownloadButton() {
 
   const download = async (withRecipes: boolean) => {
     setShowOptions(false);
-
-    const element = document.getElementById("print-canvas-area");
-    if (!element) return;
-
     setBusy(true);
+
     try {
       const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
         import("html2canvas"),
@@ -23,175 +20,132 @@ export function PdfDownloadButton() {
       ]);
 
       const pdf = new jsPDF("p", "mm", "a4");
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const pdfW = pdf.internal.pageSize.getWidth();
+      const pdfH = pdf.internal.pageSize.getHeight();
 
-      const addCanvasToPdf = (canvas: HTMLCanvasElement, addPage: boolean) => {
+      const captureToPdf = async (el: HTMLElement, addPage: boolean) => {
         if (addPage) pdf.addPage();
+        const canvas = await html2canvas(el, {
+          scale: 3,
+          useCORS: true,
+          logging: false,
+          backgroundColor: "#ffffff",
+        });
         const imgData = canvas.toDataURL("image/png");
-        const imgRatio = canvas.width / canvas.height;
-        const pageRatio = pdfWidth / pdfHeight;
+        const ratio = canvas.width / canvas.height;
+        const pageRatio = pdfW / pdfH;
         let w: number, h: number, x: number, y: number;
-        if (imgRatio > pageRatio) {
-          w = pdfWidth;
-          h = pdfWidth / imgRatio;
-          x = 0;
-          y = 0;
+        if (ratio > pageRatio) {
+          w = pdfW; h = pdfW / ratio; x = 0; y = 0;
         } else {
-          h = pdfHeight;
-          w = pdfHeight * imgRatio;
-          x = (pdfWidth - w) / 2;
-          y = 0;
+          h = pdfH; w = pdfH * ratio; x = (pdfW - w) / 2; y = 0;
         }
         pdf.addImage(imgData, "PNG", x, y, w, h, undefined, "FAST");
       };
 
-      const outer = element;
-      const inner = element.querySelector(".menu-sheet-preview-inner") as HTMLElement | null;
-      const sheet = element.querySelector(".menu-sheet") as HTMLElement | null;
-      const savedOuterStyle = outer.style.cssText;
-      const savedInnerStyle = inner?.style.cssText ?? "";
-      const savedSheetStyle = sheet?.style.cssText ?? "";
-      outer.style.width = "794px";
-      outer.style.maxWidth = "794px";
-      outer.style.overflow = "visible";
-      if (inner) {
-        inner.style.transform = "none";
-        inner.style.width = "794px";
-        inner.style.height = "auto";
-      }
-      if (sheet) {
-        sheet.style.overflow = "visible";
-        sheet.style.width = "794px";
-        sheet.style.height = "auto";
+      // --- Menu page: capture the print-only full-size MenuSheet ---
+      const printMenu = document.querySelector(".print-only .menu-sheet") as HTMLElement | null;
+      if (!printMenu) {
+        alert("Impossible de trouver le menu. Réessayez.");
+        return;
       }
 
-      const menuCanvas = await html2canvas(outer, {
-        scale: 3,
-        useCORS: true,
-        logging: false,
-        backgroundColor: "#ffffff",
-        width: 794,
-      });
+      const wrapper = printMenu.parentElement!;
+      wrapper.style.cssText = "display:block !important;position:absolute;left:-9999px;top:0;z-index:-1;";
+      printMenu.style.cssText = "width:794px;height:1123px;overflow:visible;";
 
-      outer.style.cssText = savedOuterStyle;
-      if (inner) inner.style.cssText = savedInnerStyle;
-      if (sheet) sheet.style.cssText = savedSheetStyle;
+      await captureToPdf(printMenu, false);
 
-      addCanvasToPdf(menuCanvas, false);
+      printMenu.style.cssText = "";
+      wrapper.style.cssText = "";
 
+      // --- Recipe pages ---
       if (withRecipes) {
-        const recipesEl = document.querySelector(
-          ".print-recipes-container",
-        ) as HTMLElement | null;
+        const recipesEl = document.querySelector(".print-recipes-container") as HTMLElement | null;
         if (recipesEl) {
-          recipesEl.style.display = "block";
-          const recipeCards =
-            recipesEl.querySelectorAll<HTMLElement>(".print-recipe-half");
+          recipesEl.style.cssText = "display:block !important;position:absolute;left:-9999px;top:0;z-index:-1;";
+          const cards = recipesEl.querySelectorAll<HTMLElement>(".print-recipe-half");
 
-          for (const card of recipeCards) {
-            const pageContainer = document.createElement("div");
-            pageContainer.style.cssText =
-              "width:794px;padding:40px 48px;background:#fff;position:absolute;left:-9999px;top:0;font-family:system-ui,sans-serif;";
+          for (const card of cards) {
+            const page = document.createElement("div");
+            page.style.cssText = "width:794px;padding:40px 48px;background:#fff;position:absolute;left:-9999px;top:0;font-family:system-ui,sans-serif;";
 
             const day = card.querySelector(".print-recipe-day");
             const name = card.querySelector(".print-recipe-name");
             const meta = card.querySelector(".print-recipe-meta");
-            const ingSection = card.querySelector(".print-recipe-ingredients");
-            const stepsSection = card.querySelector(".print-recipe-steps");
+            const ingSec = card.querySelector(".print-recipe-ingredients");
+            const stepsSec = card.querySelector(".print-recipe-steps");
             const notes = card.querySelector(".print-recipe-notes");
 
             if (day) {
               const el = document.createElement("div");
-              el.style.cssText =
-                "font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.2em;color:#FF6B5F;margin-bottom:8px;";
+              el.style.cssText = "font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:0.2em;color:#FF6B5F;margin-bottom:10px;";
               el.textContent = day.textContent;
-              pageContainer.appendChild(el);
+              page.appendChild(el);
             }
             if (name) {
               const el = document.createElement("h2");
-              el.style.cssText =
-                "font-size:26px;font-weight:900;line-height:1.2;margin:0 0 6px;color:#111;";
+              el.style.cssText = "font-size:28px;font-weight:900;line-height:1.2;margin:0 0 8px;color:#111;";
               el.textContent = name.textContent;
-              pageContainer.appendChild(el);
+              page.appendChild(el);
             }
             if (meta) {
               const el = document.createElement("p");
-              el.style.cssText =
-                "font-size:13px;color:#555;margin:0 0 16px;";
+              el.style.cssText = "font-size:14px;color:#555;margin:0 0 20px;";
               el.textContent = meta.textContent;
-              pageContainer.appendChild(el);
+              page.appendChild(el);
             }
 
             const grid = document.createElement("div");
-            grid.style.cssText =
-              "display:grid;grid-template-columns:1fr 1.6fr;gap:24px;";
+            grid.style.cssText = "display:grid;grid-template-columns:1fr 1.6fr;gap:28px;";
 
-            if (ingSection) {
+            if (ingSec) {
               const col = document.createElement("div");
               const h3 = document.createElement("h3");
-              h3.style.cssText =
-                "font-size:11px;font-weight:900;letter-spacing:0.12em;color:#FF6B5F;margin:0 0 8px;";
+              h3.style.cssText = "font-size:12px;font-weight:900;letter-spacing:0.12em;color:#FF6B5F;margin:0 0 10px;";
               h3.textContent = "INGRÉDIENTS";
               col.appendChild(h3);
-
-              const items = ingSection.querySelectorAll("li");
-              items.forEach((li) => {
+              ingSec.querySelectorAll("li").forEach((li) => {
                 const row = document.createElement("div");
-                row.style.cssText =
-                  "font-size:13px;padding:4px 0;border-bottom:1px solid #eee;";
+                row.style.cssText = "font-size:14px;padding:5px 0;border-bottom:1px solid #eee;";
                 row.innerHTML = li.innerHTML;
                 col.appendChild(row);
               });
               grid.appendChild(col);
             }
 
-            if (stepsSection) {
+            if (stepsSec) {
               const col = document.createElement("div");
               const h3 = document.createElement("h3");
-              h3.style.cssText =
-                "font-size:11px;font-weight:900;letter-spacing:0.12em;color:#FF6B5F;margin:0 0 8px;";
+              h3.style.cssText = "font-size:12px;font-weight:900;letter-spacing:0.12em;color:#FF6B5F;margin:0 0 10px;";
               h3.textContent = "PRÉPARATION";
               col.appendChild(h3);
-
-              const items = stepsSection.querySelectorAll("li");
-              items.forEach((li) => {
+              stepsSec.querySelectorAll("li").forEach((li) => {
                 const row = document.createElement("div");
-                row.style.cssText =
-                  "font-size:13px;line-height:1.6;margin-bottom:8px;";
+                row.style.cssText = "font-size:14px;line-height:1.6;margin-bottom:10px;";
                 row.innerHTML = li.innerHTML;
-                const numSpan = row.querySelector(".print-step-num, span");
-                if (numSpan)
-                  (numSpan as HTMLElement).style.cssText =
-                    "font-weight:900;color:#FF6B5F;";
+                const num = row.querySelector("span");
+                if (num) (num as HTMLElement).style.cssText = "font-weight:900;color:#FF6B5F;";
                 col.appendChild(row);
               });
               grid.appendChild(col);
             }
 
-            pageContainer.appendChild(grid);
+            page.appendChild(grid);
 
             if (notes) {
               const el = document.createElement("p");
-              el.style.cssText =
-                "font-size:12px;color:#666;margin-top:12px;padding:8px;background:#f9f5f0;border-radius:4px;";
+              el.style.cssText = "font-size:13px;color:#666;margin-top:16px;padding:10px;background:#f9f5f0;border-radius:4px;";
               el.textContent = notes.textContent;
-              pageContainer.appendChild(el);
+              page.appendChild(el);
             }
 
-            document.body.appendChild(pageContainer);
-
-            const canvas = await html2canvas(pageContainer, {
-              scale: 3,
-              useCORS: true,
-              logging: false,
-              backgroundColor: "#ffffff",
-            });
-            addCanvasToPdf(canvas, true);
-            document.body.removeChild(pageContainer);
+            document.body.appendChild(page);
+            await captureToPdf(page, true);
+            document.body.removeChild(page);
           }
 
-          recipesEl.style.display = "";
+          recipesEl.style.cssText = "";
         }
       }
 
