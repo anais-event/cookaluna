@@ -6,6 +6,7 @@ import { MenuPoster } from "@/components/MenuPoster";
 import { StripePattern } from "@/components/StripePattern";
 import { Sparkle, Cross, Dot } from "@/components/Sparkle";
 import { LandingTracker } from "@/components/LandingTracker";
+import { ComingSoon } from "@/components/ComingSoon";
 
 const STEPS: [string, string, string][] = [
   ["01", "Vous nous dites ce qui vous convient.", "Foyer, envies, temps, cuisine."],
@@ -127,6 +128,9 @@ export default function LandingPage() {
           </div>
           <StripePattern height={14} />
         </section>
+
+        {/* LA SUITE DE COOKALUNA */}
+        <ComingSoon />
 
         {/* BLOC FINAL */}
         <section className="relative mx-auto max-w-4xl px-4 py-20 text-center sm:px-6">
