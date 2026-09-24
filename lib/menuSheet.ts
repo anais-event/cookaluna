@@ -1,4 +1,4 @@
-import { DAY_ORDER } from "./constants";
+import { DAY_ORDER, orderedDays } from "./constants";
 import type { DayKey, MealSlot, MenuMeal, WeeklyMenuData } from "./types";
 
 // Seed pour la surprise imprimee. On combine la semaine ET la signature
@@ -20,10 +20,11 @@ export function stripWeekPrefix(label: string): string {
   return label.replace(/^\s*semaine\s+du\s+/i, "").trim();
 }
 
-// Ordre fixe lundi -> dimanche pour la feuille imprimable.
-// Independant de la date du jour : le document doit rester identique quelle
-// que soit la journee ou l'utilisateur genere son PDF.
 export const SHEET_DAY_ORDER: DayKey[] = DAY_ORDER;
+
+export function sheetDayOrder(startDay: DayKey = "monday"): DayKey[] {
+  return orderedDays(startDay);
+}
 
 export type SlotsByDay = Map<DayKey, Map<MealSlot, MenuMeal>>;
 
@@ -77,3 +78,11 @@ export const SHEET_CELLS: SheetCell[] = [
   { kind: "bonus" },
   { kind: "notes" },
 ];
+
+export function buildSheetCells(startDay: DayKey = "monday"): SheetCell[] {
+  return [
+    ...orderedDays(startDay).map((day): SheetCell => ({ kind: "day", day })),
+    { kind: "bonus" },
+    { kind: "notes" },
+  ];
+}

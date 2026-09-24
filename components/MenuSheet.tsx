@@ -9,6 +9,8 @@ import {
 import {
   SHEET_CELLS,
   SHEET_DAY_ORDER,
+  buildSheetCells,
+  sheetDayOrder,
   groupMealsByDay,
   menuBonusSeed,
   stripWeekPrefix,
@@ -166,24 +168,23 @@ function BonusCard({ bonus }: { bonus: BonusContent }) {
 }
 
 function Cell({
-  cellIndex,
+  cell,
   byDay,
   seed,
 }: {
-  cellIndex: number;
+  cell: import("@/lib/menuSheet").SheetCell;
   byDay: SlotsByDay;
   seed: string;
 }) {
-  const cell = SHEET_CELLS[cellIndex];
   if (cell.kind === "day") return <DayCard day={cell.day} slots={byDay.get(cell.day)} />;
   if (cell.kind === "notes") return <NotesCard />;
   return <BonusCard bonus={getFridgeBonus(seed)} />;
 }
 
-function ListBody({ byDay }: { byDay: SlotsByDay }) {
+function ListBody({ byDay, startDay }: { byDay: SlotsByDay; startDay?: DayKey }) {
   return (
     <ul className="sheet-list flex flex-1 flex-col divide-y-2 divide-ink/10 px-6 py-5">
-      {SHEET_DAY_ORDER.map((day) => {
+      {sheetDayOrder(startDay).map((day) => {
         const slots = byDay.get(day);
         const meals = (["lunch", "dinner"] as MealSlot[])
           .map((s) => slots?.get(s))
@@ -214,12 +215,15 @@ function ListBody({ byDay }: { byDay: SlotsByDay }) {
 export function MenuSheet({
   menu,
   view = "grid",
+  startDay,
 }: {
   menu: WeeklyMenuData;
   view?: SheetView;
+  startDay?: DayKey;
 }) {
   const byDay = groupMealsByDay(menu.meals);
   const bonusSeed = menuBonusSeed(menu);
+  const cells = buildSheetCells(startDay);
 
   return (
     <div className="menu-sheet flex flex-col bg-paper" data-view={view}>
@@ -247,11 +251,11 @@ export function MenuSheet({
       <div className="stripes h-1.5" />
 
       {view === "list" ? (
-        <ListBody byDay={byDay} />
+        <ListBody byDay={byDay} startDay={startDay} />
       ) : (
         <div className="sheet-grid grid flex-1 grid-cols-3 grid-rows-3 gap-2 p-3">
-          {SHEET_CELLS.map((_, i) => (
-            <Cell key={i} cellIndex={i} byDay={byDay} seed={bonusSeed} />
+          {cells.map((cell, i) => (
+            <Cell key={i} cell={cell} byDay={byDay} seed={bonusSeed} />
           ))}
         </div>
       )}

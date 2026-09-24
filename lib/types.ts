@@ -112,7 +112,8 @@ export interface MealProfile {
   adults: number;
   children: number;
   mealPlan: MealPlanType;
-  selectedDays: DaySlotSelection[]; // liste effective des créneaux à remplir
+  selectedDays: DaySlotSelection[];
+  startDay: DayKey;
   dietaryPreferences: Diet[];
   allergies: Allergen[];
   foodsToAvoid: string[];
@@ -122,7 +123,7 @@ export interface MealProfile {
   equipment: Equipment[];
   startingMode: StartingMode;
   ideas: string[];
-  adaptWish?: string; // envie libre saisie sur la page menu (interprétée par l'IA)
+  adaptWish?: string;
 }
 
 // Un repas placé dans le menu généré

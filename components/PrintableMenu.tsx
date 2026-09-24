@@ -1,18 +1,19 @@
 import { MenuSheet } from "./MenuSheet";
 import type { SheetView } from "@/lib/store";
-import type { WeeklyMenuData } from "@/lib/types";
+import type { DayKey, WeeklyMenuData } from "@/lib/types";
 
-// Rendu réservé à l'impression : masqué à l'écran, affiché via @media print.
 export function PrintableMenu({
   menu,
   view = "grid",
+  startDay,
 }: {
   menu: WeeklyMenuData;
   view?: SheetView;
+  startDay?: DayKey;
 }) {
   return (
     <div className="print-only">
-      <MenuSheet menu={menu} view={view} />
+      <MenuSheet menu={menu} view={view} startDay={startDay} />
     </div>
   );
 }

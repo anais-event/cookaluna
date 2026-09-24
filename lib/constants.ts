@@ -139,5 +139,10 @@ export function weekDayOrder(date = new Date()): DayKey[] {
   return Array.from({ length: 7 }, (_, i) => DAY_ORDER[(todayIdx + i) % 7]);
 }
 
+export function orderedDays(startDay: DayKey = "monday"): DayKey[] {
+  const idx = DAY_ORDER.indexOf(startDay);
+  return Array.from({ length: 7 }, (_, i) => DAY_ORDER[(idx + i) % 7]);
+}
+
 export const ALLERGY_DISCLAIMER =
   "Les suggestions sont générées automatiquement. En cas d'allergie, vérifiez toujours les ingrédients et les étiquettes des produits.";

@@ -89,6 +89,19 @@ export function HouseholdStep() {
         ))}
       </div>
 
+      <FieldLabel>Ma semaine commence le :</FieldLabel>
+      <div className="flex flex-wrap gap-2">
+        {DAY_ORDER.map((d) => (
+          <Chip
+            key={d}
+            active={profile.startDay === d}
+            onClick={() => setProfile({ startDay: d })}
+          >
+            {DAY_LABELS[d]}
+          </Chip>
+        ))}
+      </div>
+
       {profile.mealPlan === "custom" && (
         <div className="mt-6 rounded-card border-[3px] border-ink bg-coral-light p-4">
           <p className="font-display mb-3 text-sm font-bold">

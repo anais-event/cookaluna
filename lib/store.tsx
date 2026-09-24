@@ -79,7 +79,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as PersistShape;
-        if (parsed.profile) setProfileState(parsed.profile);
+        if (parsed.profile) {
+          if (!parsed.profile.startDay) parsed.profile.startDay = "monday";
+          setProfileState(parsed.profile);
+        }
         if (parsed.menu) {
           const patched = {
             ...parsed.menu,
