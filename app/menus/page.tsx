@@ -17,7 +17,7 @@ export default function MenusPage() {
     <>
       <Header />
       <main>
-        <section className="relative overflow-hidden">
+        <section className="no-print relative overflow-hidden">
           <Sparkle
             size={34}
             color="var(--coral)"

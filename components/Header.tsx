@@ -7,11 +7,11 @@ import { Sparkle } from "./Sparkle";
 
 const PRIMARY_LINKS = [
   { href: "/menu-semaine", label: "Menu de la semaine" },
+  { href: "/menus", label: "Nos menus" },
   { href: "/about", label: "Comment ça marche" },
 ];
 
 const DISCOVER_LINKS = [
-  { href: "/menus", label: "Nos menus de la semaine" },
   { href: "/menu-semaine-a-imprimer", label: "Menu à imprimer" },
   { href: "/menu-semaine-famille", label: "Menu famille" },
   { href: "/menu-semaine-rapide", label: "Menu rapide" },
