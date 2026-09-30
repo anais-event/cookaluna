@@ -11,6 +11,7 @@ const PRIMARY_LINKS = [
 ];
 
 const DISCOVER_LINKS = [
+  { href: "/menus", label: "Nos menus de la semaine" },
   { href: "/menu-semaine-a-imprimer", label: "Menu à imprimer" },
   { href: "/menu-semaine-famille", label: "Menu famille" },
   { href: "/menu-semaine-rapide", label: "Menu rapide" },

@@ -166,7 +166,11 @@ export function SeoLanding({
               <h2 className="font-display text-3xl font-extrabold">{sheetTitle}</h2>
               <p className="mt-2 text-ink/70">Vous voulez le vôtre ?</p>
               <div className="mx-auto mt-8 max-w-2xl overflow-hidden rounded-card border-[3px] border-ink shadow-pop">
-                <MenuSheet menu={sample} />
+                <div className="menu-sheet-preview">
+                  <div className="menu-sheet-preview-inner">
+                    <MenuSheet menu={sample} />
+                  </div>
+                </div>
               </div>
               <Link href="/create" className="btn btn-primary mt-8">
                 {ctaLabel}
