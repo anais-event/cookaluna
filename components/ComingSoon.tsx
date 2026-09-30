@@ -8,21 +8,27 @@ import { Loader2, Check, ArrowRight } from "lucide-react";
 const FEATURES = [
   {
     num: "01",
-    title: "Un menu qui vous connaît",
-    body: "Cookaluna apprendra vos goûts, vos habitudes et les particularités de votre foyer pour proposer des menus qui vous ressemblent vraiment.",
+    title: "Créer votre compte Cookaluna",
+    body: "Pour que Cookaluna se souvienne de vous, de vos goûts et de vos petites habitudes.",
     accent: "bg-coral",
   },
   {
     num: "02",
-    title: "Votre espace Cookaluna",
-    body: "Retrouvez vos préférences, vos menus passés et vos recettes préférées. Plus besoin de tout recommencer à chaque visite.",
+    title: "Retrouver vos menus et vos recettes",
+    body: "Parce qu’une bonne idée de dîner mérite parfois une deuxième tournée.",
     accent: "bg-ink",
   },
   {
     num: "03",
-    title: "Votre menu arrive tout seul",
-    body: "Chaque semaine, un nouveau menu adapté à votre foyer, directement dans votre boîte mail. Sans lever le petit doigt.",
+    title: "Recevoir votre menu chaque semaine",
+    body: "Votre menu arrive tout seul dans votre boîte mail. Plus besoin de venir le chercher.",
     accent: "bg-coral",
+  },
+  {
+    num: "04",
+    title: "Découvrir des menus pensés pour les enfants",
+    body: "Parce que « qu’est-ce qu’on mange ? » est déjà une question suffisamment compliquée comme ça.",
+    accent: "bg-ink",
   },
 ];
 
@@ -89,67 +95,58 @@ export function ComingSoon() {
 
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           {/* Title */}
-          <div className="relative mb-14 sm:mb-20">
+          <div className="relative mb-10 sm:mb-14">
             <div className="stripes-deco absolute -left-4 top-1 h-14 w-3 rounded-full hidden lg:block" />
             <h2 className="font-display text-4xl font-extrabold leading-[0.95] sm:text-5xl md:text-6xl">
-              Et ce n&rsquo;est que{" "}
-              <span className="relative inline-block text-coral">
-                le début
-                <svg
-                  className="absolute -bottom-2 left-0 w-full"
-                  viewBox="0 0 200 12"
-                  fill="none"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M2 8 C40 2, 80 10, 120 4 C150 0, 180 8, 198 3"
-                    stroke="var(--coral)"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    fill="none"
-                  />
-                </svg>
-              </span>
+              Vous aimez Cookaluna ?
             </h2>
+            <p className="mt-3 font-display text-2xl font-extrabold text-ink/60 sm:text-3xl">
+              On prépare quand même la suite. 😉
+            </p>
             <p className="mt-4 max-w-lg text-lg text-ink/70">
-              Cookaluna grandit. Voici ce qui mijote pour la suite.
+              Et on a quelques idées pour vous faciliter encore un peu la vie.
             </p>
           </div>
 
-          {/* Feature cards — asymmetric layout */}
-          <div className="grid gap-6 md:grid-cols-3">
+          {/* Intro line */}
+          <p className="mb-8 font-display text-xl font-bold text-ink/80">
+            Demain, vous pourrez :
+          </p>
+
+          {/* Feature cards — 2×2 grid */}
+          <div className="grid gap-5 sm:grid-cols-2">
             {FEATURES.map((f, i) => (
               <div
                 key={f.num}
-                className={`group relative ${i === 1 ? "md:translate-y-6" : ""}`}
+                className={`group relative ${i % 2 === 1 ? "sm:translate-y-3" : ""}`}
               >
-                {/* Shadow offset stripe block */}
                 <div className="stripes-soft absolute inset-0 translate-x-2 translate-y-2 rounded-card border-[3px] border-ink" />
-                <div className="card relative flex flex-col p-6 transition-transform duration-200 hover:-translate-y-1">
-                  {/* Number badge */}
-                  <span
-                    className={`${f.accent} inline-flex h-10 w-10 items-center justify-center rounded-full border-[3px] border-ink font-display text-sm font-extrabold text-white`}
-                  >
-                    {f.num}
-                  </span>
-                  <h3 className="mt-4 font-display text-xl font-extrabold leading-tight">
-                    {f.title}
-                  </h3>
-                  <p className="mt-2 text-[15px] leading-relaxed text-ink/75">
-                    {f.body}
-                  </p>
+                <div className="card relative flex flex-col p-5 sm:p-6 transition-transform duration-200 hover:-translate-y-1">
+                  <div className="flex items-start gap-4">
+                    <span
+                      className={`${f.accent} inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-[3px] border-ink font-display text-xs font-extrabold text-white`}
+                    >
+                      {f.num}
+                    </span>
+                    <div>
+                      <h3 className="font-display text-lg font-extrabold leading-tight">
+                        {f.title}
+                      </h3>
+                      <p className="mt-1.5 text-[15px] leading-relaxed text-ink/70">
+                        {f.body}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
 
           {/* Email signup */}
-          <div className="relative mx-auto mt-16 max-w-xl sm:mt-24">
-            {/* Decorative stripe corner */}
+          <div className="relative mx-auto mt-14 max-w-xl sm:mt-20">
             <div className="stripes-deco absolute -right-3 -top-3 h-full w-full rounded-card hidden sm:block" />
 
             <div className="card relative overflow-hidden p-8 sm:p-10">
-              {/* Corner stripe accent */}
               <div className="stripes absolute right-0 top-0 h-2 w-24" />
 
               {state === "success" ? (
@@ -161,17 +158,17 @@ export function ComingSoon() {
                     C&rsquo;est noté !
                   </p>
                   <p className="mt-2 text-ink/70">
-                    On vous prévient dès que les nouveautés arrivent.
+                    On vous fera signe quand les nouveautés seront prêtes.
                   </p>
                 </div>
               ) : (
                 <>
                   <h3 className="font-display text-2xl font-extrabold sm:text-3xl">
-                    Vous voulez être au courant ?
+                    Vous voulez savoir quand ça arrive ?
                   </h3>
                   <p className="mt-2 text-[15px] text-ink/70">
-                    Laissez-nous votre email et on vous prévient dès que les
-                    nouveautés arrivent.
+                    Laissez-nous votre email. On vous fera signe quand les
+                    nouveautés seront prêtes.
                   </p>
 
                   <form
