@@ -16,7 +16,6 @@ export const SEO_PAGES: { path: string; label: string; priority: number }[] = [
   { path: "/menu-semaine-vegetarien", label: "Menu de la semaine végétarien", priority: 0.7 },
   { path: "/menu-semaine-sans-four", label: "Menu de la semaine sans four", priority: 0.7 },
   { path: "/idees-repas-semaine", label: "Idées repas pour la semaine", priority: 0.6 },
-  { path: "/menus", label: "Nos menus de la semaine", priority: 0.8 },
   { path: "/about", label: "Comment ça marche", priority: 0.5 },
 ];
 

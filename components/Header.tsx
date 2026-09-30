@@ -7,7 +7,6 @@ import { Sparkle } from "./Sparkle";
 
 const PRIMARY_LINKS = [
   { href: "/menu-semaine", label: "Menu de la semaine" },
-  { href: "/menus", label: "Nos menus" },
   { href: "/about", label: "Comment ça marche" },
 ];
 

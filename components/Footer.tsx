@@ -22,8 +22,8 @@ export function Footer() {
             <Link href="/menu-semaine" className="hover:text-coral">
               Menu de la semaine
             </Link>
-            <Link href="/menus" className="hover:text-coral">
-              Nos menus
+            <Link href="/menu-semaine#archives" className="hover:text-coral">
+              Anciens menus
             </Link>
             <Link href="/menu-semaine-a-imprimer" className="hover:text-coral">
               À imprimer

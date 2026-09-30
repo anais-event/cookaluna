@@ -30,6 +30,7 @@ export interface SeoLandingProps {
   sheetTitle?: string;
   faq?: SeoFaq[];
   finalTitle?: string;
+  children?: React.ReactNode;
 }
 
 const FEATURES: [string, string][] = [
@@ -54,6 +55,7 @@ export function SeoLanding({
   sheetTitle = "Exemple de menu Cookaluna",
   faq,
   finalTitle = "Bon. On mange quoi cette semaine ?",
+  children,
 }: SeoLandingProps) {
   const sample = showSheet ? createSampleMenu() : null;
 
@@ -179,6 +181,8 @@ export function SeoLanding({
             <StripePattern height={14} />
           </section>
         )}
+
+        {children}
 
         {/* FAQ */}
         {faq && faq.length > 0 && (
