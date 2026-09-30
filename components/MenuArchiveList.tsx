@@ -73,10 +73,10 @@ export function MenuArchiveList() {
       </section>
 
       {/* Menu preview + print */}
-      <section className="bg-coral-light">
-        <StripePattern height={14} />
-        <div className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
-          <div className="mx-auto max-w-3xl overflow-hidden rounded-card border-[3px] border-ink shadow-pop">
+      <section className="print-menu-section bg-coral-light">
+        <div className="no-print"><StripePattern height={14} /></div>
+        <div className="print-menu-wrapper mx-auto max-w-4xl px-4 py-14 sm:px-6">
+          <div className="print-menu-card mx-auto max-w-3xl overflow-hidden rounded-card border-[3px] border-ink shadow-pop">
             <div className="menu-sheet-preview">
               <div className="menu-sheet-preview-inner">
                 <MenuSheet menu={menu} />
@@ -100,7 +100,7 @@ export function MenuArchiveList() {
             Un nouveau menu chaque semaine
           </p>
         </div>
-        <StripePattern height={14} />
+        <div className="no-print"><StripePattern height={14} /></div>
       </section>
 
       {/* Meal list for this week */}
