@@ -14,7 +14,7 @@ const FEATURES = [
   },
   {
     num: "02",
-    title: "Retrouver vos menus et vos recettes",
+    title: "Garder vos menus et vos recettes",
     body: "Parce qu’une bonne idée de dîner mérite parfois une deuxième tournée.",
     accent: "bg-ink",
   },
@@ -26,7 +26,7 @@ const FEATURES = [
   },
   {
     num: "04",
-    title: "Découvrir des menus pensés pour les enfants",
+    title: "Des idées quand les enfants sont à table",
     body: "Parce que « qu’est-ce qu’on mange ? » est déjà une question suffisamment compliquée comme ça.",
     accent: "bg-ink",
   },
@@ -104,7 +104,7 @@ export function ComingSoon() {
               On prépare quand même la suite. 😉
             </p>
             <p className="mt-4 max-w-lg text-lg text-ink/70">
-              Et on a quelques idées pour vous faciliter encore un peu la vie.
+              Et bientôt, on pourra faire encore mieux.
             </p>
           </div>
 

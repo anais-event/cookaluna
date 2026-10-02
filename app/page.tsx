@@ -10,7 +10,7 @@ import { ComingSoon } from "@/components/ComingSoon";
 
 const STEPS: [string, string, string][] = [
   ["01", "Vous nous dites", "ce que vous aimez, qui mange et comment vous cuisinez."],
-  ["02", "On vous prépare", "une semaine de repas qui colle à votre vraie vie."],
+  ["02", "On vous prépare", "une semaine de repas."],
   ["03", "Vous imprimez", "et c'est parti."],
 ];
 
@@ -123,7 +123,7 @@ export default function LandingPage() {
           <h2 className="font-display text-4xl font-extrabold leading-tight sm:text-5xl">
             Bon. On mange quoi cette semaine ?
           </h2>
-          <p className="mt-3 text-lg text-ink/70">Votre frigo aimerait bien savoir.</p>
+          <p className="mt-3 text-lg text-ink/70">Allez, on s&rsquo;y met.</p>
           <Link href="/create" className="btn btn-coral mt-8">
             Créer mon menu
           </Link>
