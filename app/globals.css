@@ -275,17 +275,51 @@ h3,
     overflow: hidden;
   }
 
+  /* ---------------------------------------------------------------
+     Typographie d'impression.
+     Les tailles de MenuSheet sont en px, calibrées pour l'aperçu
+     écran (feuille 210mm réduite par transform: scale). À
+     l'impression la feuille reprend sa taille réelle mais les px
+     restent : 10px = 2,6mm de texte perdu dans une case de 75mm.
+     On repasse donc toute la feuille imprimée en pt.
+     Ces règles ne concernent que la copie imprimée : l'aperçu
+     écran est .no-print, donc display:none ici.
+     --------------------------------------------------------------- */
+
+  /* ------- En-tête : une vraie affiche ------- */
   .menu-sheet .sheet-header {
-    flex: 0 0 48mm;
-    padding: 10mm 12mm 8mm !important;
+    flex: 0 0 41mm;
+    padding: 8mm 12mm 6mm !important;
   }
+  .menu-sheet .sheet-header .brand-name {
+    font-size: 22pt !important;
+    letter-spacing: -0.01em;
+  }
+  .menu-sheet .sheet-header .text-right p:first-child {
+    font-size: 8pt !important;
+    letter-spacing: 0.28em;
+  }
+  .menu-sheet .sheet-header .text-right p:last-child {
+    font-size: 13pt !important;
+  }
+  .menu-sheet .sheet-tagline {
+    font-size: 24pt !important;
+    line-height: 1.06 !important;
+    max-width: 100% !important;
+    margin-top: 4mm !important;
+  }
+
   .menu-sheet .sheet-grid {
     flex: 1 1 auto;
-    padding: 4mm 6mm !important;
+    padding: 3.5mm 6mm !important;
     gap: 3mm !important;
+    min-height: 0;
   }
   .menu-sheet .sheet-footer {
     flex: 0 0 12mm;
+  }
+  .menu-sheet .sheet-footer span {
+    font-size: 9.5pt !important;
   }
 
   .menu-sheet .sheet-day,
@@ -294,9 +328,87 @@ h3,
     break-inside: avoid;
     page-break-inside: avoid;
   }
+
+  /* ------- Cases des jours : petites affiches, pas des cellules ------- */
+  .menu-sheet .sheet-day .day-head {
+    padding: 2.3mm 3mm !important;
+    gap: 2mm !important;
+  }
+  .menu-sheet .sheet-day .day-name {
+    font-size: 11.5pt !important;
+    letter-spacing: 0.06em;
+  }
+  /* Le contenu occupe la case au lieu d'être posé en haut. */
+  .menu-sheet .sheet-day .day-body {
+    padding: 3mm 3mm !important;
+    gap: 3.5mm !important;
+    justify-content: space-evenly !important;
+    min-height: 0;
+    overflow: hidden;
+  }
   .menu-sheet .sheet-day .meal p {
     overflow-wrap: break-word;
     word-break: break-word;
+  }
+  .menu-sheet .sheet-day .meal-slot {
+    font-size: 8.5pt !important;
+    letter-spacing: 0.16em;
+    line-height: 1.1 !important;
+  }
+  /* Le nom du plat est la star : lisible à deux mètres du frigo.
+     Le retour à la ligne est assumé, jamais compensé par du
+     rapetissement. */
+  .menu-sheet .sheet-day .meal-name {
+    font-size: 15pt !important;
+    font-weight: 800 !important;
+    line-height: 1.12 !important;
+    letter-spacing: -0.01em;
+    margin-top: 1.4mm !important;
+    hyphens: auto;
+  }
+  .menu-sheet .sheet-day .meal-meta {
+    font-size: 8pt !important;
+    margin-top: 1.4mm !important;
+    line-height: 1.1 !important;
+  }
+  .menu-sheet .sheet-day .day-free {
+    font-size: 11pt !important;
+  }
+
+  /* ------- Pense-bête & devinette : cohérents, pas surchargés ------- */
+  .menu-sheet .notes-card,
+  .menu-sheet .bonus-card {
+    padding: 4mm !important;
+  }
+  .menu-sheet .notes-card > p:first-child,
+  .menu-sheet .bonus-card > p:first-child {
+    font-size: 10pt !important;
+    letter-spacing: 0.1em;
+    gap: 2mm !important;
+  }
+  .menu-sheet .notes-card p,
+  .menu-sheet .bonus-card p {
+    font-size: 9.5pt !important;
+  }
+  .menu-sheet .bonus-card .text-\[11\.5px\],
+  .menu-sheet .bonus-card .text-\[11px\] {
+    font-size: 12.5pt !important;
+    line-height: 1.25 !important;
+  }
+  /* Lignes à écrire : réparties sur la hauteur, assez marquées
+     pour exister sur le papier. */
+  .menu-sheet .notes-card > div > div {
+    height: auto !important;
+    flex: 1 1 0 !important;
+    min-height: 0;
+    border-bottom-width: 0.4mm !important;
+    border-bottom-color: var(--coral) !important;
+  }
+  /* Uniquement le dessin à colorier, pas les étoiles décoratives. */
+  .menu-sheet .bonus-card .coloring-art {
+    width: 34mm !important;
+    height: 34mm !important;
+    max-height: 100% !important;
   }
 
   /* Strip all wrappers around MenuSheet so it prints at native A4 */

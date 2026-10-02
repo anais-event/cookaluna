@@ -27,27 +27,27 @@ function DayCard({ day, slots }: { day: DayKey; slots?: Map<MealSlot, MenuMeal> 
     <div className="sheet-day flex h-full flex-col rounded-2xl border-2 border-ink bg-white">
       <div className="day-head flex items-center justify-center gap-1.5 border-b-2 border-ink bg-coral-light px-3 py-2">
         <Sparkle size={9} color="var(--coral)" />
-        <span className="font-display text-[12.5px] font-extrabold uppercase tracking-wide text-ink">
+        <span className="day-name font-display text-[12.5px] font-extrabold uppercase tracking-wide text-ink">
           {DAY_LABELS[day]}
         </span>
         <Sparkle size={9} color="var(--coral)" />
       </div>
       <div className="day-body flex flex-1 flex-col justify-center gap-2 px-2 py-2">
         {activeSlots.length === 0 ? (
-          <p className="text-center text-[10px] italic text-ink/50">Journée libre</p>
+          <p className="day-free text-center text-[10px] italic text-ink/50">Journée libre</p>
         ) : (
           activeSlots.map((sl) => {
             const meal = slots!.get(sl)!;
             return (
               <div key={sl} className="meal min-w-0">
-                <p className="font-display text-[8px] font-bold uppercase tracking-[0.1em] text-coral">
+                <p className="meal-slot font-display text-[8px] font-bold uppercase tracking-[0.1em] text-coral">
                   {SLOT_LABELS[sl]}
                 </p>
-                <p className="mt-0.5 text-[10px] font-semibold leading-tight text-ink" style={{ overflowWrap: "break-word", wordBreak: "break-word" }}>
+                <p className="meal-name mt-0.5 text-[10px] font-semibold leading-tight text-ink" style={{ overflowWrap: "break-word", wordBreak: "break-word" }}>
                   {meal.name}
                 </p>
                 {(meal.prepTime > 0 || meal.difficulty) && (
-                  <p className="mt-0.5 text-[7.5px] text-ink/55">
+                  <p className="meal-meta mt-0.5 text-[7.5px] text-ink/55">
                     {meal.prepTime > 0 ? `${meal.prepTime} min` : null}
                     {meal.prepTime > 0 && meal.difficulty ? " · " : null}
                     {meal.difficulty ? DIFFICULTY_LABELS[meal.difficulty] : null}
@@ -121,7 +121,7 @@ function BonusCard({ bonus }: { bonus: BonusContent }) {
                 viewBox="0 0 100 100"
                 width="140"
                 height="140"
-                className="max-h-full"
+                className="coloring-art max-h-full"
               >
                 {bonus.shape.paths.map((d, i) => (
                   <path
