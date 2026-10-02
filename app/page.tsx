@@ -9,9 +9,9 @@ import { LandingTracker } from "@/components/LandingTracker";
 import { ComingSoon } from "@/components/ComingSoon";
 
 const STEPS: [string, string, string][] = [
-  ["01", "Vous nous dites ce qui vous convient.", "Foyer, envies, temps, cuisine."],
-  ["02", "COOKALUNA vous propose votre semaine.", "Un menu cohérent, adapté à vous."],
-  ["03", "Vous imprimez. C'est tout.", "Une feuille prête pour le frigo."],
+  ["01", "Vous nous dites", "ce que vous aimez, qui mange et comment vous cuisinez."],
+  ["02", "On vous prépare", "une semaine de repas qui colle à votre vraie vie."],
+  ["03", "Vous imprimez", "et c'est parti."],
 ];
 
 export const metadata = pageMeta({
@@ -27,37 +27,37 @@ export default function LandingPage() {
       <LandingTracker />
       <Header />
       <main>
-        {/* HERO */}
+        {/* HERO — l'affiche à coller sur le frigo */}
         <section className="relative overflow-hidden">
           <Sparkle size={40} color="var(--coral)" className="absolute left-6 top-10 animate-twinkle" />
-          <Cross size={22} className="absolute right-10 top-24" />
-          <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 md:py-20">
+          <Cross size={22} className="absolute right-10 top-24 hidden sm:block" />
+          <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1fr_1.05fr] md:gap-14 md:py-24">
             <div>
               <span className="font-display inline-flex items-center gap-2 rounded-full border-[3px] border-ink bg-coral-light px-4 py-1.5 text-sm font-bold">
                 <Sparkle size={16} color="var(--coral)" /> On mange quoi ce soir ?
               </span>
-              <h1 className="mt-5 font-display text-5xl font-extrabold leading-[0.95] sm:text-6xl">
+              <h1 className="mt-5 font-display text-5xl font-extrabold leading-[0.92] sm:text-6xl md:text-7xl">
                 Le menu de la semaine,{" "}
                 <span className="text-coral">prêt pour le frigo.</span>
               </h1>
-              <p className="mt-5 max-w-md text-lg text-ink/80">
-                Quelques questions, quelques idées, et hop : votre menu est prêt à
-                imprimer.
+              <p className="mt-6 max-w-sm text-lg font-medium text-ink/80">
+                Trois questions. Une semaine de dîners. À coller sur le frigo.
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-4">
-                <Link href="/create" className="btn btn-coral">
+                <Link href="/create" className="btn btn-coral text-lg">
                   Créer mon menu
                 </Link>
                 <Link href="/about" className="btn btn-ghost">
                   Voir comment ça marche
                 </Link>
               </div>
-              <p className="mt-3 flex items-center gap-2 text-sm font-medium text-ink/70">
+              <p className="mt-4 flex items-center gap-2 text-sm font-medium text-ink/70">
                 <Dot size={8} color="var(--coral)" /> Gratuit · sans inscription
               </p>
             </div>
 
-            <div className="relative">
+            {/* Affiche : légèrement plus grande, posée de travers comme sur le frigo */}
+            <div className="relative md:scale-[1.08] md:pl-6">
               <div className="stripes-soft absolute inset-0 -z-10 translate-x-6 translate-y-6 rounded-[28px] border-[3px] border-ink" />
               <MenuPoster />
             </div>
@@ -65,64 +65,49 @@ export default function LandingPage() {
           <StripePattern height={16} />
         </section>
 
-        {/* INTRO SEO — courte, sans écraser le produit */}
-        <section className="mx-auto max-w-3xl px-4 pt-14 sm:px-6">
-          <h2 className="font-display text-3xl font-extrabold">
-            Votre menu de la semaine, sans le casse-tête
-          </h2>
-          <p className="mt-3 text-lg leading-relaxed text-ink/80">
-            Marre de vous demander quoi manger chaque soir ? Cookaluna vous aide à
-            préparer votre <Link href="/menu-semaine" className="font-bold text-coral underline">menu de la semaine</Link>{" "}
-            en quelques minutes : indiquez qui mange, vos préférences, votre temps et
-            les équipements de votre cuisine. Vous obtenez une semaine de repas à
-            modifier, compléter et imprimer.
-          </p>
-        </section>
-
-        {/* CA MARCHE COMME CA */}
-        <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-          <h2 className="font-display text-4xl font-extrabold">Ça marche comme ça</h2>
-          <p className="mt-2 text-ink/70">On s'occupe du casse-tête. Vous gardez le contrôle.</p>
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {STEPS.map(([num, title, sub]) => (
-              <div key={num} className="card p-6">
-                <span className="font-display text-5xl font-extrabold text-coral">
+        {/* COMMENT — bandeau éditorial 01/02/03, pas de cartes */}
+        <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-28">
+          <div className="grid gap-y-12 md:grid-cols-3 md:gap-x-10">
+            {STEPS.map(([num, title, sub], i) => (
+              <div
+                key={num}
+                className={i === 1 ? "md:translate-y-8" : i === 2 ? "md:translate-y-16" : ""}
+              >
+                <span className="font-display block text-7xl font-extrabold text-coral leading-none sm:text-8xl">
                   {num}
                 </span>
-                <h3 className="mt-3 font-display text-xl font-bold">{title}</h3>
-                <p className="mt-1 text-ink/70">{sub}</p>
+                <h2 className="mt-4 font-display text-2xl font-extrabold sm:text-3xl">
+                  {title}
+                </h2>
+                <p className="mt-2 max-w-xs text-lg text-ink/70">{sub}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* EXEMPLE */}
-        <section className="bg-coral-light">
+        {/* PUNCHLINES — la vraie voix de Cookaluna */}
+        <section className="relative overflow-hidden bg-coral-light">
           <StripePattern height={14} />
-          <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 md:grid-cols-2">
+          <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 sm:px-6 md:grid-cols-2 md:py-24">
             <div>
-              <h2 className="font-display text-4xl font-extrabold">
-                Une semaine qui nous ressemble
+              <h2 className="font-display text-5xl font-extrabold leading-[0.95] sm:text-6xl">
+                Pas d&rsquo;idée&nbsp;?
+                <br />
+                <span className="text-coral">On en a.</span>
               </h2>
-              <p className="mt-3 max-w-md text-lg text-ink/80">
-                Des repas simples, variés, adaptés à votre cuisine. On réutilise
-                certains ingrédients pour vous simplifier la vie.
-              </p>
-              <ul className="mt-6 space-y-2">
+              <ul className="mt-10 space-y-6">
                 {[
-                  "Pas d'idée ? On en a.",
                   "Celui-là ne vous fait pas envie ? Changez-le.",
                   "Pas de four ? Aucun problème.",
                 ].map((t) => (
-                  <li key={t} className="flex items-center gap-3">
-                    <Sparkle size={16} color="var(--coral)" />
-                    <span className="font-medium">{t}</span>
+                  <li key={t} className="flex items-start gap-4">
+                    <Sparkle size={22} color="var(--coral)" className="mt-1 shrink-0" />
+                    <span className="font-display text-2xl font-bold leading-snug sm:text-3xl">
+                      {t}
+                    </span>
                   </li>
                 ))}
               </ul>
-              <Link href="/create" className="btn btn-primary mt-8">
-                Créer mon menu
-              </Link>
             </div>
             <MenuPoster tilt={false} />
           </div>
@@ -132,15 +117,14 @@ export default function LandingPage() {
         {/* LA SUITE DE COOKALUNA */}
         <ComingSoon />
 
-        {/* BLOC FINAL */}
-        <section className="relative mx-auto max-w-4xl px-4 py-20 text-center sm:px-6">
-          <Sparkle size={34} color="var(--coral)" className="absolute left-10 top-10 animate-twinkle" />
-          <Cross size={20} className="absolute right-16 bottom-16" />
-          <h2 className="font-display text-5xl font-extrabold leading-tight">
+        {/* CLÔTURE — légère, une dernière phrase */}
+        <section className="relative mx-auto max-w-3xl px-4 py-20 text-center sm:px-6">
+          <Sparkle size={30} color="var(--coral)" className="absolute left-8 top-12 animate-twinkle hidden sm:block" />
+          <h2 className="font-display text-4xl font-extrabold leading-tight sm:text-5xl">
             Bon. On mange quoi cette semaine ?
           </h2>
-          <p className="mt-4 text-lg text-ink/70">Votre frigo va aimer.</p>
-          <Link href="/create" className="btn btn-coral mt-8 text-xl">
+          <p className="mt-3 text-lg text-ink/70">Votre frigo aimerait bien savoir.</p>
+          <Link href="/create" className="btn btn-coral mt-8">
             Créer mon menu
           </Link>
         </section>

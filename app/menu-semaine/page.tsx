@@ -15,21 +15,6 @@ export default function Page() {
   return (
     <SeoLanding
       h1="Créez votre menu de la semaine"
-      children={
-        <section id="archives" className="bg-coral-light">
-          <StripePattern height={14} />
-          <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-            <h2 className="font-display text-3xl font-extrabold text-center">
-              Les anciens menus
-            </h2>
-            <p className="mt-2 text-center text-ink/70">
-              Parcourez nos menus passés et imprimez celui qui vous plaît.
-            </p>
-          </div>
-          <MenuArchiveList />
-          <StripePattern height={14} />
-        </section>
-      }
       intro="Organiser les repas de toute la semaine ne devrait pas prendre une heure. Cookaluna vous aide à construire un menu adapté à votre quotidien, puis vous laisse le modifier jusqu'à ce qu'il vous convienne."
       features
       showSheet
@@ -78,6 +63,20 @@ export default function Page() {
           a: "Oui. Vous pouvez changer un repas sans régénérer toute la semaine.",
         },
       ]}
-    />
+    >
+      <section id="archives" className="bg-coral-light">
+        <StripePattern height={14} />
+        <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+          <h2 className="font-display text-3xl font-extrabold text-center">
+            Les anciens menus
+          </h2>
+          <p className="mt-2 text-center text-ink/70">
+            Parcourez nos menus passés et imprimez celui qui vous plaît.
+          </p>
+        </div>
+        <MenuArchiveList />
+        <StripePattern height={14} />
+      </section>
+    </SeoLanding>
   );
 }

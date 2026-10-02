@@ -109,38 +109,31 @@ export function ComingSoon() {
           </div>
 
           {/* Intro line */}
-          <p className="mb-8 font-display text-xl font-bold text-ink/80">
+          <p className="mb-10 font-display text-xl font-bold text-ink/80">
             Demain, vous pourrez :
           </p>
 
-          {/* Feature cards — 2×2 grid */}
-          <div className="grid gap-5 sm:grid-cols-2">
-            {FEATURES.map((f, i) => (
-              <div
+          {/* Liste éditoriale — filets, gros index, pas de grille uniforme */}
+          <ul className="border-t-[3px] border-ink">
+            {FEATURES.map((f) => (
+              <li
                 key={f.num}
-                className={`group relative ${i % 2 === 1 ? "sm:translate-y-3" : ""}`}
+                className="flex flex-col gap-3 border-b-[3px] border-ink py-6 sm:flex-row sm:items-baseline sm:gap-8 sm:py-7"
               >
-                <div className="stripes-soft absolute inset-0 translate-x-2 translate-y-2 rounded-card border-[3px] border-ink" />
-                <div className="card relative flex flex-col p-5 sm:p-6 transition-transform duration-200 hover:-translate-y-1">
-                  <div className="flex items-start gap-4">
-                    <span
-                      className={`${f.accent} inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-[3px] border-ink font-display text-xs font-extrabold text-white`}
-                    >
-                      {f.num}
-                    </span>
-                    <div>
-                      <h3 className="font-display text-lg font-extrabold leading-tight">
-                        {f.title}
-                      </h3>
-                      <p className="mt-1.5 text-[15px] leading-relaxed text-ink/70">
-                        {f.body}
-                      </p>
-                    </div>
-                  </div>
+                <span className="font-display text-3xl font-extrabold text-coral leading-none sm:w-16 sm:shrink-0 sm:text-4xl">
+                  {f.num}
+                </span>
+                <div className="sm:flex sm:items-baseline sm:gap-8">
+                  <h3 className="font-display text-xl font-extrabold leading-tight sm:w-72 sm:shrink-0">
+                    {f.title}
+                  </h3>
+                  <p className="mt-1.5 text-[15px] leading-relaxed text-ink/70 sm:mt-0">
+                    {f.body}
+                  </p>
                 </div>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
 
           {/* Email signup */}
           <div className="relative mx-auto mt-14 max-w-xl sm:mt-20">
